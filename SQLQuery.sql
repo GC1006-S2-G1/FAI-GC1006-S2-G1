@@ -270,4 +270,16 @@ INSERT INTO [NganHangCauHoiToan](NoiDung,TraLoi1,Tra) VALUES
 (N'',N'',N'',N'',N'',),
 (N'',N'',N'',N'',N'',)*/
 
-SELECT * FROM GiaoVu
+SELECT * FROM GiaoVu WHERE IsDeleted=0
+--UPDATE [GiaoVu] SET IsDeleted=1 WHERE TenTaiKhoan='admin'
+
+IF EXISTS (SELECT * FROM sys.views WHERE name='vwListUser')
+DROP VIEW vwListUser
+GO
+CREATE VIEW vwListUser
+AS
+SELECT TenTaiKhoan,MatKhau
+FROM [GiaoVu] WHERE IsDeleted=0
+GO
+
+SELECT * FROM vwListUser

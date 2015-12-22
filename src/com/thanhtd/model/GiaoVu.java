@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author Thanh Tran
  */
-public class GiaoVu {
+public class GiaoVu implements Comparable<GiaoVu> {
 
     private String TenTaiKhoan;
     private String MatKhau;
@@ -88,5 +88,10 @@ public class GiaoVu {
     }
 
     public GiaoVu() {
+    }
+
+    @Override
+    public int compareTo(GiaoVu o) {
+        return this.TenTaiKhoan.compareTo(o.TenTaiKhoan);
     }
 }

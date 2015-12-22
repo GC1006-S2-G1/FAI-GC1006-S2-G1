@@ -10,6 +10,8 @@ import com.thanhtd.model.GiaoVu;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +40,7 @@ public class DbController {
     public static List<GiaoVu> getGiaoVuFromDb() {
         try {
             List<GiaoVu> temp = new LinkedList<>();
-            String sql = "SELECT * FROM [GiaoVu]";
+            String sql = "SELECT * FROM GiaoVu WHERE IsDeleted=0";
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
             while (result.next()) {
@@ -58,6 +60,84 @@ public class DbController {
             System.err.println("Error to get GiaoVu from Database");
         }
         return null;
+    }
+
+    public static TreeMap<String, String> getListUserFromDb() {
+        try {
+            String sql = "SELECT * FROM vwListUser";
+            TreeMap<String, String> temp = new TreeMap<>();
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                temp.put(result.getString(1), result.getString(2));
+            }
+            return temp;
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error to get User from Database");
+        }
+        return null;
+    }
+
+    public static void deleteGiaoVuFromDb(GiaoVu item) {
+        try {
+            String url = "UPDATE [GiaoVu] SET IsDeleted=1 WHERE TenTaiKhoan=?";
+            PreparedStatement statement = conn.prepareStatement(url);
+            statement.setString(1, item.getTenTaiKhoan());
+            int rowEffected = statement.executeUpdate();
+            if (rowEffected > 0) {
+                System.out.println("Delete account successfully.");
+            }
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Delete failed. Please try again.");
+        }
+    }
+
+    public static boolean addGiaoVuToDb(GiaoVu item) {
+        try {
+            String sql = "INSERT INTO [GiaoVu](TenTaiKhoan,MatKhau,HoTen,Email,NgaySinh,DienThoai,DiaChi) VALUES\n"
+                    + "(?,'202cb962ac59075b964b07152d234b70',?,?,?,?,?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, item.getTenTaiKhoan());
+            statement.setNString(2, item.getHoTen());
+            statement.setString(3, item.getEmail());
+            statement.setDate(4, new Date(item.getNgaySinh().getTime()));
+            statement.setString(5, item.getMobile());
+            statement.setNString(6, item.getDiaChi());
+            int rowEffected = statement.executeUpdate();
+            if (rowEffected > 0) {
+                System.out.println("Insert new account successfully.");
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Insert failed.");
+            return false;
+        }
+        return false;
+    }
+
+    public static boolean updateGiaoVuToDb(GiaoVu item) {
+        try {
+            String sql = "UPDATE [GiaoVu] SET HoTen=?,Email=?,NgaySinh=?,DienThoai=?,DiaChi=? WHERE TenTaiKhoan=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setNString(1, item.getHoTen());
+            statement.setString(2, item.getEmail());
+            statement.setDate(3, new Date(item.getNgaySinh().getTime()));
+            statement.setString(4, item.getMobile());
+            statement.setNString(5, item.getDiaChi());
+            statement.setString(6, item.getTenTaiKhoan());
+            int rowEffected = statement.executeUpdate();
+            if (rowEffected > 0) {
+                System.out.println("Update successfully.");
+                return true;
+            }
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Update failed.");
+        }
+        return false;
     }
 
     public static List<CauHoi> getCauHoiFromDB() {

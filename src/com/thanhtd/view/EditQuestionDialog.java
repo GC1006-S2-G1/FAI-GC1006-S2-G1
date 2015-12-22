@@ -37,6 +37,9 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     }
 
     private void CreateAndShowUI() {
+        setLocationRelativeTo(null);
+        setTitle("Edit Question Information");
+        
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setLineWrap(true);
         jTextArea2.setWrapStyleWord(true);
@@ -81,6 +84,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Question ID");
 
