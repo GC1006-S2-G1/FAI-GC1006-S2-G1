@@ -6,6 +6,7 @@
 package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
+import com.thanhtd.model.GiaoVu;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,15 +20,29 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+
+    public static String currentPassword;
+    
     public MainFrame() {
         try {
             initComponents();
             setLocationRelativeTo(null);
+            createAndShowUI();
             DbController.connectToDb();
 
         } catch (SQLException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void createAndShowUI() {
+        jMenu2.setVisible(false);
+        jMenuItem6.setEnabled(false);
+    }
+
+    private void uiAsTeacher() {
+        jMenu2.setVisible(true);
+        jMenuItem6.setEnabled(true);
     }
 
     /**
@@ -42,6 +57,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -61,6 +77,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem3);
+
+        jMenuItem6.setText("Change Password");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem6);
 
         jMenuItem1.setText("Exit");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -122,8 +146,18 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         LoginDialog loginDialog = new LoginDialog(this, true, DbController.getGiaoVuFromDb());
         loginDialog.getContentPane();
-
+        loginDialog.setVisible(true);
+        if (loginDialog.checkLogin()) {
+            uiAsTeacher();
+            currentPassword=loginDialog.getCurrentPassword();
+        }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        ChangePassDialog changePass = new ChangePassDialog(this, true);
+        changePass.getContentPane();
+        changePass.setVisible(true);
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -170,5 +204,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     // End of variables declaration//GEN-END:variables
 }

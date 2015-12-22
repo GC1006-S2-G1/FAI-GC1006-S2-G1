@@ -5,12 +5,6 @@
  */
 package com.thanhtd.view;
 
-import com.thanhtd.model.GiaoVu;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import javax.swing.JOptionPane;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -18,56 +12,26 @@ import org.apache.commons.codec.digest.DigestUtils;
  *
  * @author Thanh Tran
  */
-public class LoginDialog extends javax.swing.JDialog {
+public class ChangePassDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form LoginDialog
+     * Creates new form ChangePassDialog
      */
-    boolean isLogedin = false;
-    SortedMap<String, String> listUser = new TreeMap<>();
-    List<GiaoVu> listGiaoVu = null;
-    String currentPassword;
-
-    public LoginDialog(java.awt.Frame parent, boolean modal, List<GiaoVu> item) {
+    public ChangePassDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        listGiaoVu = item;
         createAndShowUI();
-
-        listUser = generateUserList();
-    }
-
-    private TreeMap<String, String> generateUserList() {
-        TreeMap<String, String> temp = new TreeMap<>();
-        for (GiaoVu i : listGiaoVu) {
-            temp.put(i.getTenTaiKhoan(), i.getMatKhau());
-        }
-        return temp;
     }
 
     private void createAndShowUI() {
-        jTextField1.setText("");
         jPasswordField1.setText("");
+        jPasswordField2.setText("");
+        jPasswordField3.setText("");
+
+        setTitle("Change Password");
         setLocationRelativeTo(null);
-        setTitle("Login");
-
-        jButton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
     }
 
-    public String getCurrentPassword() {
-        return currentPassword;
-    }
-
-    public boolean checkLogin() {
-        return isLogedin;
-    }
-
-    //public GiaoVu
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -78,30 +42,41 @@ public class LoginDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jPasswordField1 = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
+        jPasswordField2 = new javax.swing.JPasswordField();
+        jLabel3 = new javax.swing.JLabel();
+        jPasswordField3 = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jPasswordField1 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Username");
+        jLabel1.setText("Current Password");
 
-        jTextField1.setText("jTextField1");
+        jPasswordField1.setText("jPasswordField1");
 
-        jLabel2.setText("Password");
+        jLabel2.setText("New Password");
+
+        jPasswordField2.setText("jPasswordField2");
+
+        jLabel3.setText("Retype Password");
+
+        jPasswordField3.setText("jPasswordField3");
 
         jButton1.setText("Close");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Login");
+        jButton2.setText("Change");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-
-        jPasswordField1.setText("jPasswordField1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -113,11 +88,13 @@ public class LoginDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)))
+                            .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                            .addComponent(jPasswordField2)
+                            .addComponent(jPasswordField3)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton2)
@@ -131,11 +108,15 @@ public class LoginDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -146,21 +127,23 @@ public class LoginDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (jTextField1.getText().compareTo("") == 0 || (new String(jPasswordField1.getPassword()).compareTo("") == 0)) {
-            JOptionPane.showMessageDialog(this, "Please fill all text fileds", "Error", JOptionPane.ERROR_MESSAGE);
-        } else if (listUser.containsKey(jTextField1.getText())) {
-            if (DigestUtils.md5Hex(new String(jPasswordField1.getPassword())).equals(listUser.get(jTextField1.getText()))) {
-                JOptionPane.showMessageDialog(this, "Login successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
-                currentPassword = listUser.get(jTextField1.getText());
-                System.out.println(currentPassword);
-                isLogedin = true;
-                setVisible(false);
+        if (!(jPasswordField1.getPassword().length == 0 || jPasswordField2.getPassword().length == 0 || jPasswordField3.getPassword().length == 0)) {
+            if (MainFrame.currentPassword.compareTo(DigestUtils.md5Hex(jPasswordField1.getPassword().toString())) == 0) {
+                if (jPasswordField2.getPassword().toString().equals(jPasswordField3.getPassword().toString())) {
+                    JOptionPane.showMessageDialog(this, "Change password successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Two new password does not match.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Wrong password.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Wrong current password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "User not exists", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please fill all fields", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -169,7 +152,9 @@ public class LoginDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField jPasswordField2;
+    private javax.swing.JPasswordField jPasswordField3;
     // End of variables declaration//GEN-END:variables
 }

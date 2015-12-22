@@ -14,6 +14,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -60,6 +61,22 @@ public class DbController {
             System.err.println("Error to get GiaoVu from Database");
         }
         return null;
+    }
+
+    public static void changeUserPassword(String username, String newPass) {
+        try {
+            String sql = "UPDATE [vwListUser] SET MatKhau=? WHERE TenTaiKhoan=" + username;
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, DigestUtils.md5Hex(newPass));
+            int rowUpdateed = statement.executeUpdate();
+            if (rowUpdateed > 0) {
+                System.out.println("Change password successfully.");
+            } else {
+                System.err.println("Change password failed.");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static TreeMap<String, String> getListUserFromDb() {
