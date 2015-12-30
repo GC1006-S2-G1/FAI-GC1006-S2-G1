@@ -13,25 +13,21 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Thanh Tran
  */
-public class GiaoVuTableModel extends AbstractTableModel {
+public class ThiSinhTableModel extends AbstractTableModel {
 
-    private List<GiaoVu> listTaiKhoan = null;
+    private List<ThiSinh> listThiSinh = new LinkedList<>();
 
-    public GiaoVuTableModel() {
-        listTaiKhoan = new LinkedList<>();
+    public void setData(List<ThiSinh> item) {
+        listThiSinh = item;
     }
 
-    public void setData(List<GiaoVu> item) {
-        listTaiKhoan = item;
-    }
-
-    public List<GiaoVu> getData() {
-        return listTaiKhoan;
+    public List<ThiSinh> getData() {
+        return listThiSinh;
     }
 
     @Override
     public int getRowCount() {
-        return listTaiKhoan.size();
+        return listThiSinh.size();
     }
 
     @Override
@@ -41,18 +37,18 @@ public class GiaoVuTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        GiaoVu temp = listTaiKhoan.get(rowIndex);
+        ThiSinh temp = listThiSinh.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                return temp.getTenTaiKhoan();
+                return temp.getMaThiSinh();
             case 1:
                 return temp.getHoTen();
             case 2:
-                return temp.getEmail();
-            case 3:
                 return temp.getNgaySinh();
+            case 3:
+                return temp.getSoChungMinhThu();
             case 4:
-                return temp.getMobile();
+                return temp.getMaDe();
             default:
                 return "";
         }
@@ -62,18 +58,17 @@ public class GiaoVuTableModel extends AbstractTableModel {
     public String getColumnName(int column) {
         switch (column) {
             case 0:
-                return "Account";
+                return "Student Id";
             case 1:
                 return "Full Name";
             case 2:
-                return "Email";
-            case 3:
                 return "Date of Birth";
+            case 3:
+                return "Identify Number";
             case 4:
-                return "Mobile";
+                return "General Exam Id";
             default:
                 return "";
         }
     }
-
 }

@@ -25,6 +25,16 @@ public class CauHoiTableModel extends AbstractTableModel {
         return listCauHoi;
     }
 
+    public void addQuestion(CauHoi item) {
+        listCauHoi.add(item);
+        fireTableDataChanged();
+    }
+
+    public void removeQuestion(int index) {
+        listCauHoi.remove(index);
+        fireTableDataChanged();
+    }
+
     @Override
     public int getRowCount() {
         return listCauHoi.size();

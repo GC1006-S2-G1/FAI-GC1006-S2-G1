@@ -5,6 +5,7 @@
  */
 package com.thanhtd.view;
 
+import com.thanhtd.controller.DbController;
 import javax.swing.JOptionPane;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -133,9 +134,14 @@ public class ChangePassDialog extends javax.swing.JDialog {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (!(jPasswordField1.getPassword().length == 0 || jPasswordField2.getPassword().length == 0 || jPasswordField3.getPassword().length == 0)) {
-            if (MainFrame.currentPassword.compareTo(DigestUtils.md5Hex(jPasswordField1.getPassword().toString())) == 0) {
-                if (jPasswordField2.getPassword().toString().equals(jPasswordField3.getPassword().toString())) {
-                    JOptionPane.showMessageDialog(this, "Change password successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            if (MainFrame.currentUser.getMatKhau().compareTo(DigestUtils.md5Hex(String.valueOf(jPasswordField1.getPassword()))) == 0) {
+                if (String.valueOf(jPasswordField2.getPassword()).equals(String.valueOf(jPasswordField3.getPassword()))) {
+                    if (DbController.changeCurrentUserPassword(MainFrame.currentUser.getTenTaiKhoan(), DigestUtils.md5Hex(String.valueOf(jPasswordField2.getPassword())))) {
+                        JOptionPane.showMessageDialog(this, "Change password successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Cannot change current user password. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "Two new password does not match.", "Error", JOptionPane.ERROR_MESSAGE);
                 }

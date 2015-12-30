@@ -288,10 +288,20 @@ public class EditAccountInfoDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        int dr = JOptionPane.showConfirmDialog(this, "Are you sure want to delete this account?", "Confirm to delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (dr == JOptionPane.YES_OPTION) {
-            DbController.deleteGiaoVuFromDb(giaoVu);
-            setVisible(false);
+        if (giaoVu.getTenTaiKhoan().equals("admin")) {
+            JOptionPane.showMessageDialog(this, "You can not delete administration account.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (giaoVu.getTenTaiKhoan().equals(MainFrame.currentUser.getTenTaiKhoan())) {
+            JOptionPane.showMessageDialog(this, "You can not delete your current account. Please login as administrator and then delete again.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            int dr = JOptionPane.showConfirmDialog(this, "Are you sure want to delete this account?", "Confirm to delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (dr == JOptionPane.YES_OPTION) {
+                if (DbController.deleteGiaoVuFromDb(giaoVu.getTenTaiKhoan())) {
+                    JOptionPane.showMessageDialog(this, "Delete account successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error while delete this account. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 

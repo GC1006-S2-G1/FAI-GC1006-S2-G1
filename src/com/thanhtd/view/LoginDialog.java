@@ -5,6 +5,7 @@
  */
 package com.thanhtd.view;
 
+import com.thanhtd.controller.DbController;
 import com.thanhtd.model.GiaoVu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,7 +27,8 @@ public class LoginDialog extends javax.swing.JDialog {
     boolean isLogedin = false;
     SortedMap<String, String> listUser = new TreeMap<>();
     List<GiaoVu> listGiaoVu = null;
-    String currentPassword;
+    GiaoVu currentUser = null;
+    //String currentPassword;
 
     public LoginDialog(java.awt.Frame parent, boolean modal, List<GiaoVu> item) {
         super(parent, modal);
@@ -50,17 +52,13 @@ public class LoginDialog extends javax.swing.JDialog {
         jPasswordField1.setText("");
         setLocationRelativeTo(null);
         setTitle("Login");
-
-        jButton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
     }
 
-    public String getCurrentPassword() {
-        return currentPassword;
+//    public String getCurrentPassword() {
+//        return currentPassword;
+//    }
+    public GiaoVu getCurrentUser() {
+        return currentUser;
     }
 
     public boolean checkLogin() {
@@ -93,6 +91,11 @@ public class LoginDialog extends javax.swing.JDialog {
         jLabel2.setText("Password");
 
         jButton1.setText("Close");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Login");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -152,8 +155,9 @@ public class LoginDialog extends javax.swing.JDialog {
         } else if (listUser.containsKey(jTextField1.getText())) {
             if (DigestUtils.md5Hex(new String(jPasswordField1.getPassword())).equals(listUser.get(jTextField1.getText()))) {
                 JOptionPane.showMessageDialog(this, "Login successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
-                currentPassword = listUser.get(jTextField1.getText());
-                System.out.println(currentPassword);
+                currentUser = DbController.getCurrentUser(jTextField1.getText());
+                //currentPassword = listUser.get(jTextField1.getText());
+                //System.out.println(currentPassword);
                 isLogedin = true;
                 setVisible(false);
             } else {
@@ -163,6 +167,10 @@ public class LoginDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "User not exists", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

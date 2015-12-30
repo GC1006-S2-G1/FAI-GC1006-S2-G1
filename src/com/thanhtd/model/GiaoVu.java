@@ -20,6 +20,7 @@ public class GiaoVu implements Comparable<GiaoVu> {
     private Date NgaySinh;
     private String Mobile;
     private String DiaChi;
+    private boolean IsDeleted;
 
     public String getTenTaiKhoan() {
         return TenTaiKhoan;
@@ -77,6 +78,14 @@ public class GiaoVu implements Comparable<GiaoVu> {
         this.DiaChi = DiaChi;
     }
 
+    public boolean getIsDeleted() {
+        return IsDeleted;
+    }
+
+    public void setIsDeleted(boolean IsDeleted) {
+        this.IsDeleted = IsDeleted;
+    }
+
     public GiaoVu(String TenTaiKhoan, String MatKhau, String HoTen, String Email, Date NgaySinh, String Mobile, String DiaChi) {
         this.TenTaiKhoan = TenTaiKhoan;
         this.MatKhau = MatKhau;
@@ -85,6 +94,18 @@ public class GiaoVu implements Comparable<GiaoVu> {
         this.NgaySinh = NgaySinh;
         this.Mobile = Mobile;
         this.DiaChi = DiaChi;
+        this.IsDeleted = false;
+    }
+
+    public GiaoVu(String TenTaiKhoan, String MatKhau, String HoTen, String Email, Date NgaySinh, String Mobile, String DiaChi, boolean IsDeleted) {
+        this.TenTaiKhoan = TenTaiKhoan;
+        this.MatKhau = MatKhau;
+        this.HoTen = HoTen;
+        this.Email = Email;
+        this.NgaySinh = NgaySinh;
+        this.Mobile = Mobile;
+        this.DiaChi = DiaChi;
+        this.IsDeleted = IsDeleted;
     }
 
     public GiaoVu() {

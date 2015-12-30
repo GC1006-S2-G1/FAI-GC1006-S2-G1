@@ -12,10 +12,23 @@ import java.util.Date;
  * @author Thanh Tran
  */
 public class ThiSinh {
+
     private String MaThiSinh;
-    private String MaDe;
     private String HoTen;
     private Date NgaySinh;
+    private String SoChungMinhThu;
+    private String MaDe;
+
+    public ThiSinh() {
+    }
+
+    public ThiSinh(String MaThiSinh, String HoTen, Date NgaySinh, String SoChungMinhThu, String MaDe) {
+        this.MaThiSinh = MaThiSinh;
+        this.HoTen = HoTen;
+        this.NgaySinh = NgaySinh;
+        this.SoChungMinhThu = SoChungMinhThu;
+        this.MaDe = MaDe;
+    }
 
     public String getMaThiSinh() {
         return MaThiSinh;
@@ -49,13 +62,11 @@ public class ThiSinh {
         this.NgaySinh = NgaySinh;
     }
 
-    public ThiSinh(String MaThiSinh, String MaDe, String HoTen, Date NgaySinh) {
-        this.MaThiSinh = MaThiSinh;
-        this.MaDe = MaDe;
-        this.HoTen = HoTen;
-        this.NgaySinh = NgaySinh;
+    public String getSoChungMinhThu() {
+        return SoChungMinhThu;
     }
 
-    public ThiSinh() {
-    }    
+    public void setSoChungMinhThu(String SoChungMinhThu) {
+        this.SoChungMinhThu = SoChungMinhThu;
+    }
 }

@@ -5,7 +5,12 @@
  */
 package com.thanhtd.view;
 
+import com.thanhtd.controller.DbController;
 import com.thanhtd.model.CauHoi;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -27,19 +32,29 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     }
 
     private void ShowInformation() {
-        jLabel2.setText("" + cauHoi.getMaCauHoi());
-        jTextArea1.setText(cauHoi.getNoiDung());
-        jTextArea2.setText(cauHoi.getTraLoi1());
-        jTextArea4.setText(cauHoi.getTraLoi2());
-        jTextArea3.setText(cauHoi.getTraLoi3());
-        jTextArea5.setText(cauHoi.getTraLoi4());
-        jTextField1.setText("" + cauHoi.getDapAn());
+        if (cauHoi != null) {
+            jLabel2.setText("" + cauHoi.getMaCauHoi());
+            jTextArea1.setText(cauHoi.getNoiDung());
+            jTextArea2.setText(cauHoi.getTraLoi1());
+            jTextArea4.setText(cauHoi.getTraLoi2());
+            jTextArea3.setText(cauHoi.getTraLoi3());
+            jTextArea5.setText(cauHoi.getTraLoi4());
+            jTextField1.setText("" + cauHoi.getDapAn());
+        } else {
+            jLabel2.setText("" + (DbController.getLastQuestionId() + 1));
+            jTextArea1.setText("");
+            jTextArea2.setText("");
+            jTextArea4.setText("");
+            jTextArea3.setText("");
+            jTextArea5.setText("");
+            jTextField1.setText("");
+        }
     }
 
     private void CreateAndShowUI() {
         setLocationRelativeTo(null);
         setTitle("Edit Question Information");
-        
+
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setLineWrap(true);
         jTextArea2.setWrapStyleWord(true);
@@ -50,6 +65,35 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jTextArea4.setLineWrap(true);
         jTextArea5.setWrapStyleWord(true);
         jTextArea5.setLineWrap(true);
+        
+        getListSubject();
+
+        if (cauHoi == null) {
+            jButton2.setText("Save");
+            jButton2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    cauHoi = new CauHoi();
+                    cauHoi.setNoiDung(jTextArea1.getText());
+                    cauHoi.setTraLoi1(jTextArea2.getText());
+                    cauHoi.setTraLoi2(jTextArea4.getText());
+                    cauHoi.setTraLoi3(jTextArea3.getText());
+                    cauHoi.setTraLoi4(jTextArea5.getText());
+                    cauHoi.setDapAn(Integer.parseInt(jTextField1.getText()));
+                }
+            });
+        }
+    }
+
+    public CauHoi getCauHoi() {
+        return cauHoi;
+    }
+
+    private void getListSubject() {
+        List<String> temp = DbController.getListSubject();
+        for (String i : temp) {
+            jComboBox1.addItem(i);
+        }
     }
 
     /**
@@ -82,6 +126,8 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -125,9 +171,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jTextArea5.setRows(3);
         jScrollPane5.setViewportView(jTextArea5);
 
-        jLabel8.setText("jLabel8");
-
-        jTextField1.setText("jTextField1");
+        jLabel8.setText("Answer");
 
         jButton1.setText("Close");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -137,6 +181,8 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         });
 
         jButton2.setText("Delete");
+
+        jLabel9.setText("Subject");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -157,7 +203,10 @@ public class EditQuestionDialog extends javax.swing.JDialog {
                             .addComponent(jScrollPane1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(247, 247, 247)
+                                .addComponent(jLabel9)
+                                .addGap(27, 27, 27)
+                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(jTextField1)
@@ -185,7 +234,9 @@ public class EditQuestionDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel9)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
@@ -225,6 +276,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -233,6 +285,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

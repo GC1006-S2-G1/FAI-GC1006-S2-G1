@@ -7,6 +7,7 @@ package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.GiaoVu;
+import com.thanhtd.model.ThiSinh;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +21,10 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
+    //public static String currentPassword;
+    public static GiaoVu currentUser = null;
+    public static ThiSinh currentStudent = null;
 
-    public static String currentPassword;
-    
     public MainFrame() {
         try {
             initComponents();
@@ -43,6 +45,12 @@ public class MainFrame extends javax.swing.JFrame {
     private void uiAsTeacher() {
         jMenu2.setVisible(true);
         jMenuItem6.setEnabled(true);
+        jMenuItem3.setEnabled(false);
+    }
+
+    private void uiAsStudent() {
+        jMenuItem3.setEnabled(false);
+        jMenuItem6.setEnabled(false);
     }
 
     /**
@@ -111,6 +119,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3.setText("Test");
 
         jMenuItem4.setText("Begin Test");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem4);
 
         jMenuItem5.setText("View Results");
@@ -149,7 +162,8 @@ public class MainFrame extends javax.swing.JFrame {
         loginDialog.setVisible(true);
         if (loginDialog.checkLogin()) {
             uiAsTeacher();
-            currentPassword=loginDialog.getCurrentPassword();
+            //currentPassword = loginDialog.getCurrentPassword();
+            currentUser = loginDialog.getCurrentUser();
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
@@ -158,6 +172,26 @@ public class MainFrame extends javax.swing.JFrame {
         changePass.getContentPane();
         changePass.setVisible(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        if (currentUser == null) {
+            StudentLoginDialog studentLogin = new StudentLoginDialog(this, true);
+            studentLogin.getContentPane();
+            studentLogin.setVisible(true);
+            if (studentLogin.isLogin()) {
+                uiAsStudent();
+                currentStudent = studentLogin.getThiSinh();
+
+                BeginTestDialog beginTest = new BeginTestDialog(this, true);
+                beginTest.getContentPane();
+                beginTest.setVisible(true);
+            }
+        } else {
+            BeginTestDialog beginTest = new BeginTestDialog(this, true);
+            beginTest.getContentPane();
+            beginTest.setVisible(true);
+        }
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments
