@@ -7,8 +7,10 @@ package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.ThiSinh;
+import java.util.Date;
 import java.util.SortedMap;
 import javax.swing.JOptionPane;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  *
@@ -19,7 +21,7 @@ public class StudentLoginDialog extends javax.swing.JDialog {
     /**
      * Creates new form StudentLoginDialog
      */
-    SortedMap<String, String> listStudent;
+    SortedMap<String, Date> listStudent;
     ThiSinh currentStudent;
     boolean isLoggedIn = false;
 
@@ -115,11 +117,21 @@ public class StudentLoginDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (listStudent.containsKey(jTextField1.getText())) {
-            JOptionPane.showMessageDialog(this, "Login successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
-            currentStudent = DbController.getStudentById(jTextField1.getText());
-            isLoggedIn = true;
-            this.dispose();
+        if (listStudent.containsKey(jTextField1.getText().toUpperCase())) {
+            Date temp1 = listStudent.get(jTextField1.getText().toUpperCase());
+            Date temp2 = new Date();
+            if (DateUtils.isSameDay(temp1, temp2)) {
+                JOptionPane.showMessageDialog(this, "Login successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                currentStudent = DbController.getStudentById(jTextField1.getText().toUpperCase());
+                isLoggedIn = true;
+                this.dispose();
+            } else if (temp1.after(temp2)) {
+                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nPlease wait to " + temp1.toString() + "\nSee you again.", "Wrong Test Date", JOptionPane.INFORMATION_MESSAGE);
+                System.exit(0);
+            } else {
+                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nYou missed the test. Poor you!", "Wrong Test Date", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Wrong Student Id.", "Error", JOptionPane.ERROR_MESSAGE);
         }

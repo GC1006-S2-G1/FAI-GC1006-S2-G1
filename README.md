@@ -8,3 +8,6 @@ Project Group 1 - GC1006
 	+ Import question from text file
 	+ Student login, User login
 	+ Implement some function
+- 05Jan2016:
+	+ User and Student can do exam
+	+ ...

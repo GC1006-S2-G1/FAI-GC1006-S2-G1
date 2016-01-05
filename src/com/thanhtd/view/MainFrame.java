@@ -8,9 +8,6 @@ package com.thanhtd.view;
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.GiaoVu;
 import com.thanhtd.model.ThiSinh;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,30 +23,35 @@ public class MainFrame extends javax.swing.JFrame {
     public static ThiSinh currentStudent = null;
 
     public MainFrame() {
-        try {
-            initComponents();
-            setLocationRelativeTo(null);
-            createAndShowUI();
-            DbController.connectToDb();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        initComponents();
+        setLocationRelativeTo(null);
+        createAndShowUI();
     }
 
     private void createAndShowUI() {
         jMenu2.setVisible(false);
+        jMenuItem5.setEnabled(false);
         jMenuItem6.setEnabled(false);
+        information();
+    }
+
+    private void information() {
+        jTextArea1.setWrapStyleWord(true);
+        jTextArea1.setLineWrap(true);
+        jTextArea1.setEditable(false);
+        jTextArea1.setText("DEMO VERSION\n\n- Login as Teacher: \n\t-User: admin \n\t-Pass: admin\n\n- Login as Student: TS0001 (Examination date: 05Jan2016)");
     }
 
     private void uiAsTeacher() {
         jMenu2.setVisible(true);
-        jMenuItem6.setEnabled(true);
         jMenuItem3.setEnabled(false);
+        jMenuItem5.setEnabled(true);
+        jMenuItem6.setEnabled(true);
     }
 
     private void uiAsStudent() {
         jMenuItem3.setEnabled(false);
+        jMenuItem5.setEnabled(true);
         jMenuItem6.setEnabled(false);
     }
 
@@ -62,6 +64,8 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -75,6 +79,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FPT University Test Online System");
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
 
         jMenu1.setText("File");
 
@@ -127,6 +136,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3.add(jMenuItem4);
 
         jMenuItem5.setText("View Results");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem5);
 
         jMenuBar1.add(jMenu3);
@@ -137,11 +151,17 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -182,16 +202,22 @@ public class MainFrame extends javax.swing.JFrame {
                 uiAsStudent();
                 currentStudent = studentLogin.getThiSinh();
 
-                BeginTestDialog beginTest = new BeginTestDialog(this, true);
-                beginTest.getContentPane();
-                beginTest.setVisible(true);
+                ChooseSubjectTestForStudentDialog studentBeginTest = new ChooseSubjectTestForStudentDialog(this, true);
+                studentBeginTest.getContentPane();
+                studentBeginTest.setVisible(true);
             }
         } else {
-            BeginTestDialog beginTest = new BeginTestDialog(this, true);
-            beginTest.getContentPane();
-            beginTest.setVisible(true);
+            ChooseSubjectTestForUserDialog userBeginTest = new ChooseSubjectTestForUserDialog(this, true);
+            userBeginTest.getContentPane();
+            userBeginTest.setVisible(true);
         }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        ResultDialog resultDialog = new ResultDialog(this, true);
+        resultDialog.getContentPane();
+        resultDialog.setVisible(true);
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,5 +265,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

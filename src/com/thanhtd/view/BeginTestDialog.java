@@ -5,8 +5,12 @@
  */
 package com.thanhtd.view;
 
+import com.thanhtd.model.CauHoi;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -19,28 +23,50 @@ public class BeginTestDialog extends javax.swing.JDialog {
     /**
      * Creates new form BeginTestDialog
      */
-    private int pos = 1;
+    private int pos = 0;
+    private int result = 0;
     private Timer timer;
-    private int minuteCountdown = 1;
-    private int secondCountdown = 60;
+    private int minuteCountdown = 2;
+    private int secondCountdown = 0;
+    private List<CauHoi> listCauHoi;
+    private int[] userChecked;
+    private boolean isFinished = false;
 
-    public BeginTestDialog(java.awt.Frame parent, boolean modal) {
+    public BeginTestDialog(java.awt.Frame parent, boolean modal, List<CauHoi> item) {
         super(parent, modal);
         initComponents();
+        listCauHoi = item;
 
-        showContent();
-
-        int dr = JOptionPane.showConfirmDialog(this, "Are you want to start exam?", "Question", JOptionPane.YES_NO_CANCEL_OPTION);
-        if (dr == JOptionPane.YES_OPTION) {
-            timer.start();
-        }
+        createAndShowUI();
+        showClock();
+        timer.start();
+        userChecked = new int[10];
+        showQuestion(pos);
     }
 
-    private void showContent() {
+    private void createAndShowUI() {
         setTitle("Test Exam");
         setLocationRelativeTo(null);
-        jLabel2.setText("" + pos);
-        if (pos == 1) {
+        jLabel6.setText(listCauHoi.get(0).getMonThi());
+        jTextArea1.setWrapStyleWord(true);
+        jTextArea1.setLineWrap(true);
+        jTextArea1.setEnabled(false);
+
+        jRadioButton1.setActionCommand("1");
+        jRadioButton2.setActionCommand("2");
+        jRadioButton3.setActionCommand("3");
+        jRadioButton4.setActionCommand("4");
+
+        this.setAlwaysOnTop(true);
+        //this.setUndecorated(false);
+        this.setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
+
+        //add new(for test)
+        jButton1.addActionListener(nextClick);
+    }
+
+    private void showClock() {
+        if (pos == 0) {
             jButton3.setEnabled(false);
         }
 
@@ -48,11 +74,11 @@ public class BeginTestDialog extends javax.swing.JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (minuteCountdown > 0) {
-                    if (secondCountdown == 0) {
-                        secondCountdown = 60;
+                    if (secondCountdown < 0) {
+                        secondCountdown = 59;
                         minuteCountdown--;
                     }
-                } else if (secondCountdown == 0) {
+                } else if (secondCountdown < 0) {
                     timer.stop();
                     showResult();
                 }
@@ -62,8 +88,46 @@ public class BeginTestDialog extends javax.swing.JDialog {
         });
     }
 
+    private void showQuestion(int position) {
+        CauHoi temp = listCauHoi.get(position);
+        jTextArea1.setText(temp.getNoiDung());
+        jRadioButton1.setText("<html>" + temp.getTraLoi1() + "</html>");
+        jRadioButton2.setText("<html>" + temp.getTraLoi2() + "</html>");
+        jRadioButton3.setText("<html>" + temp.getTraLoi3() + "</html>");
+        jRadioButton4.setText("<html>" + temp.getTraLoi4() + "</html>");
+
+        jLabel2.setText((position + 1) + "/10");
+    }
+
     private void showResult() {
-        JOptionPane.showMessageDialog(this, "Your result: 00/00", "Your Result", JOptionPane.INFORMATION_MESSAGE);
+        for (int i = 0; i < 10; i++) {
+            if (userChecked[i] == (listCauHoi.get(i).getDapAn())) {
+                result += 1;
+            }
+        }
+        if (result >= 5) {
+            JOptionPane.showMessageDialog(this, "Your result: " + result + "/10" + "\nCongratulation. You passed the exam.", "Your Result", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Your result: " + result + "/10" + "\nPoor you, you failed. See you again.", "Your Result", JOptionPane.INFORMATION_MESSAGE);
+        }
+        isFinished = true;
+        this.dispose();
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public boolean getFinished() {
+        return isFinished;
+    }
+
+    private void getChoice(int position) {
+        if (buttonGroup1.getSelection() != null) {
+            userChecked[position] = Integer.parseInt(buttonGroup1.getSelection().getActionCommand());
+        } else {
+            userChecked[position] = 0;
+        }
     }
 
     /**
@@ -75,16 +139,28 @@ public class BeginTestDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jPanel4 = new javax.swing.JPanel();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButton3 = new javax.swing.JRadioButton();
+        jRadioButton4 = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setResizable(false);
 
         jButton3.setText("Previous");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -95,19 +171,7 @@ public class BeginTestDialog extends javax.swing.JDialog {
         jPanel1.add(jButton3);
 
         jButton1.setText("Next");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
         jPanel1.add(jButton1);
-
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Question Position: ");
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        jLabel2.setText("jLabel2");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -115,23 +179,104 @@ public class BeginTestDialog extends javax.swing.JDialog {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel4.setText("Remaining Time:");
 
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        jScrollPane1.setViewportView(jTextArea1);
+
+        buttonGroup1.add(jRadioButton1);
+        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton1.setText("jRadioButton1");
+
+        buttonGroup1.add(jRadioButton2);
+        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton2.setText("jRadioButton2");
+
+        buttonGroup1.add(jRadioButton3);
+        jRadioButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton3.setText("jRadioButton3");
+
+        buttonGroup1.add(jRadioButton4);
+        jRadioButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton4.setText("jRadioButton4");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jRadioButton2))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jRadioButton1))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jRadioButton4))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jRadioButton3)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jRadioButton1)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton2)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton3)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton4)
+                .addContainerGap(217, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        jLabel1.setText("Question:");
+
+        jLabel2.setText("jLabel2");
+
+        jLabel5.setText("Subject:");
+
+        jLabel6.setText("jLabel6");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(125, 125, 125)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)))
-                .addContainerGap(206, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 275, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addGap(120, 120, 120)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addGap(48, 48, 48))
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,12 +284,13 @@ public class BeginTestDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addGap(99, 99, 99)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap(158, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -165,85 +311,98 @@ public class BeginTestDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        pos++;
-        showContent();
-        if (pos == 10) {
-            jButton1.setText("End Exam");
-            jButton1.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int dr = JOptionPane.showConfirmDialog(null, "Are you sure want to end this test.", "End Exam", JOptionPane.YES_NO_CANCEL_OPTION);
-                    if (dr == JOptionPane.YES_OPTION) {
-                        showResult();
-                        System.exit(0);
+    private ActionListener nextClick = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (pos < 9) {
+                getChoice(pos);
+                pos++;
+                if (userChecked[pos] == 0) {
+                    buttonGroup1.clearSelection();
+                } else {
+                    for (Enumeration btngrg = buttonGroup1.getElements(); btngrg.hasMoreElements();) {
+                        javax.swing.JRadioButton b = (javax.swing.JRadioButton) btngrg.nextElement();
+                        if (Integer.parseInt(b.getActionCommand()) == userChecked[pos]) {
+                            b.setSelected(true);
+                        }
                     }
                 }
-            });
+
+                showClock();
+                showQuestion(pos);
+                if (pos == 9) {
+                    jButton1.setText("End Exam");
+                    jButton1.removeActionListener(nextClick);
+                    jButton1.addActionListener(endExamClick);
+                }
+                if (pos != 0) {
+                    jButton3.setEnabled(true);
+                }
+            }
         }
-        if (pos != 1) {
-            jButton3.setEnabled(true);
+    };
+
+    private ActionListener endExamClick = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            getChoice(pos);
+            setAlwaysOnTop(false);
+            int dr = JOptionPane.showConfirmDialog(null, "Are you sure want to end this test.", "End Exam", JOptionPane.YES_NO_OPTION);
+            if (dr == JOptionPane.YES_OPTION) {
+                showResult();
+            }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    };
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        pos--;
-        showContent();
-        if (pos == 1) {
-            jButton3.setEnabled(false);
-        }
-        if (pos != 10) {
-            jButton1.setText("Next");
+        if (pos > 0) {
+            getChoice(pos);
+            if (pos == 9) {
+                jButton1.removeActionListener(endExamClick);
+                jButton1.addActionListener(nextClick);
+            }
+            pos--;
+            if (userChecked[pos] == 0) {
+                buttonGroup1.clearSelection();
+            } else {
+                for (Enumeration e = buttonGroup1.getElements(); e.hasMoreElements();) {
+                    javax.swing.JRadioButton b = (javax.swing.JRadioButton) e.nextElement();
+                    if (Integer.parseInt(b.getActionCommand()) == userChecked[pos]) {
+                        b.setSelected(true);
+                    }
+                }
+            }
+
+            showClock();
+            showQuestion(pos);
+            if (pos == 0) {
+                jButton3.setEnabled(false);
+            }
+            if (pos != 9) {
+                jButton1.setText("Next");
+            }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BeginTestDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BeginTestDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BeginTestDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BeginTestDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                BeginTestDialog dialog = new BeginTestDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JRadioButton jRadioButton4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

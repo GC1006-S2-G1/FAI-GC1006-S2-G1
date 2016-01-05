@@ -142,8 +142,10 @@ CONSTRAINT PK_MaThiSinh PRIMARY KEY(MaThiSinh),
 [HoTen] NVARCHAR(200) NOT NULL,
 [NgaySinh] DATE NOT NULL,
 [SoChungMinhThu] VARCHAR(50) NOT NULL,
+[DiaChi] NVARCHAR(MAX) NOT NULL,
 [MaDe] VARCHAR(20),
 CONSTRAINT FK_QuanLyDeThi_ThiSinh FOREIGN KEY(MaDe) REFERENCES [QuanLyDeThi](MaDe),
+[NgayPhaiLamBai] DATE NOT NULL,
 [IsDeleted] BIT DEFAULT 0
 )
 
@@ -247,8 +249,11 @@ INSERT INTO [QuanLyDeThi](MaDe,TenTaiKhoan,NgayTaoDe,MaDeToan,MaDeSu,MaDeVan) VA
 ('2015DT0004','admin','2015-12-28',1001,2000,3001),
 ('2015DT0005','admin','2015-12-28',1000,2000,3001)
 
-INSERT INTO [ThiSinh](MaThiSinh,HoTen,NgaySinh,SoChungMinhThu,MaDe) VALUES
-('TS0001','Admin Noc','1999-04-01','012345678','2015DT0001')
+INSERT INTO [ThiSinh](MaThiSinh,HoTen,NgaySinh,SoChungMinhThu,DiaChi,MaDe,NgayPhaiLamBai) VALUES
+('TS0001','Admin Noc','1999-04-01','012345678','Ha Noi, Viet Nam','2015DT0001','2016-01-05')
+
+INSERT INTO [KetQua](MaDe,MaThiSinh,NgayThi,DiemToan,DiemSu,DiemVan) VALUES
+('2015DT0001','TS0001','2016-01-05',5,5,5)
 
 IF EXISTS (SELECT * FROM sys.views WHERE name='vwListUser')
 DROP VIEW vwListUser
@@ -259,14 +264,14 @@ AS
 GO
 
 --CREATE STORED PROCEDURE TO GET ListSubject
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_listSubject')
-DROP PROCEDURE sp_listSubject
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListSubject')
+DROP PROCEDURE sp_GetListSubject
 GO
-CREATE PROCEDURE sp_listSubject
+CREATE PROCEDURE sp_GetListSubject
 AS
 	SELECT DISTINCT MonThi FROM NganHangCauHoi WHERE IsDeleted=0
 GO
---EXECUTE sp_listSubject
+--EXECUTE sp_GetListSubject
 
 --CREATE STORED PROCEDURE TO ADD NewQuestion
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_addNewQuestion')
@@ -297,14 +302,14 @@ GO
 --EXECUTE sp_GetAllQuestions
 
 --CREATE STORED PROCEDURE TO GET LAST QUESTIONID
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_LastQuestionId')
-DROP PROCEDURE sp_LastQuestionId
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetLastQuestionId')
+DROP PROCEDURE sp_GetLastQuestionId
 GO
-CREATE PROCEDURE sp_LastQuestionId
+CREATE PROCEDURE sp_GetLastQuestionId
 AS
 	SELECT TOP 1 [MaCauHoi] FROM [NganHangCauHoi] ORDER BY [MaCauHoi] DESC
 GO
---EXECUTE sp_LastQuestionId
+--EXECUTE sp_GetLastQuestionId
 
 --CREATE STORED PROCEDURE TO GET CURRENT USER
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetCurrentUser')
@@ -318,16 +323,16 @@ GO
 --EXECUTE sp_GetCurrentUser admin
 
 --CREATE STORED PROCEDURE TO CHANGE CURRENT USER PASSWORD
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_ChangePassWord')
-DROP PROCEDURE sp_ChangePassWord
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_ChangePassword')
+DROP PROCEDURE sp_ChangePassword
 GO
-CREATE PROCEDURE sp_ChangePassWord
+CREATE PROCEDURE sp_ChangePassword
 	@TenTaiKhoan VARCHAR(50),
 	@MatKhauMoi VARCHAR(50)
 AS
 	UPDATE [GiaoVu] SET MatKhau=@MatKhauMoi WHERE TenTaiKhoan=@TenTaiKhoan
 GO
---EXECUTE sp_ChangePassWord 'admin','123'
+--EXECUTE sp_ChangePassword 'admin','123'
 
 --CREATE STORED PROCEDURE TO DELETE ACCOUNT
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_DeleteAccount')
@@ -339,6 +344,17 @@ AS
 	UPDATE [GiaoVu] SET IsDeleted=1 WHERE TenTaiKhoan=@TenTaiKhoan
 GO
 --EXECUTE sp_DeleteAccount 'admin'
+
+--CREATE STORED PROCEDURE TO DELETE STUDENT
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_DeleteStudentById')
+DROP PROCEDURE sp_DeleteStudentById
+GO
+CREATE PROCEDURE sp_DeleteStudentById
+	@MaThiSinh VARCHAR(20)
+AS
+	UPDATE [ThiSinh] SET IsDeleted=1 WHERE MaThiSinh=@MaThiSinh
+GO
+--EXECUTE sp_DeleteStudentById 'TS0001'
 
 --CREATE STORED PROCEDURE TO GET ALL EXAM ID
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamId')
@@ -367,52 +383,15 @@ AS
 	SELECT * FROM [DeSu] WHERE IsDeleted=0
 GO
 --EXECUTE sp_GetAllExamHistory
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamLiterial')
-DROP PROCEDURE sp_GetAllExamLiterial
+
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamLiterature')
+DROP PROCEDURE sp_GetAllExamLiterature
 GO
-CREATE PROCEDURE sp_GetAllExamLiterial
+CREATE PROCEDURE sp_GetAllExamLiterature
 AS
 	SELECT * FROM [DeVan] WHERE IsDeleted=0
 GO
---EXECUTE sp_GetAllExamLiterial
-
---CREATE STORED PROCEDURE TO GET QUESTIONS ID OF SUBJECT TEST
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetMathTest')
-DROP PROCEDURE sp_GetMathTest
-GO
-CREATE PROCEDURE sp_GetMathTest
-	@MaDeToan INT
-AS
-	SELECT MaCauHoiToan1,MaCauHoiToan2,MaCauHoiToan3,MaCauHoiToan4,
-	MaCauHoiToan5,MaCauHoiToan6,MaCauHoiToan7,
-	MaCauHoiToan8,MaCauHoiToan9,MaCauHoiToan10	
-	FROM [DeToan]
-	WHERE MaDeToan=@MaDeToan
-GO
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetHistoryTest')
-DROP PROCEDURE sp_GetHistoryTest
-GO
-CREATE PROCEDURE sp_GetHistoryTest
-	@MaDeSu INT
-AS
-	SELECT MaCauHoiSu1,MaCauHoiSu2,MaCauHoiSu3,MaCauHoiSu4,
-	MaCauHoiSu5,MaCauHoiSu6,MaCauHoiSu7,
-	MaCauHoiSu8,MaCauHoiSu9,MaCauHoiSu10	
-	FROM [DeSu]
-	WHERE MaDeSu=@MaDeSu
-GO
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetLiteratureTest')
-DROP PROCEDURE sp_GetLiteratureTest
-GO
-CREATE PROCEDURE sp_GetLiteratureTest
-	@MaDeVan INT
-AS
-	SELECT MaCauHoiVan1,MaCauHoiVan2,MaCauHoiVan3,MaCauHoiVan4,
-	MaCauHoiVan5,MaCauHoiVan6,MaCauHoiVan7,
-	MaCauHoiVan8,MaCauHoiVan9,MaCauHoiVan10	
-	FROM [DeVan]
-	WHERE MaDeVan=@MaDeVan
-GO
+--EXECUTE sp_GetAllExamLiterature
 
 --CREATE STORED PROCEDURE TO GET ALL QUESTIONS OF SUBJECT TEST
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllQuestionsFromMathTest')
@@ -506,7 +485,9 @@ CREATE PROCEDURE sp_InsertMathTest
 	@MaCauHoi1 INT,@MaCauHoi2 INT,@MaCauHoi3 INT,@MaCauHoi4 INT,@MaCauHoi5 INT,
 	@MaCauHoi6 INT,@MaCauHoi7 INT,@MaCauHoi8 INT,@MaCauHoi9 INT,@MaCauHoi10 INT
 AS
-	INSERT INTO [DeToan](MaCauHoiToan1,MaCauHoiToan2,MaCauHoiToan3,MaCauHoiToan4,MaCauHoiToan5,MaCauHoiToan6,MaCauHoiToan7,MaCauHoiToan8,MaCauHoiToan9,MaCauHoiToan10) VALUES
+	INSERT INTO [DeToan](MaCauHoiToan1,MaCauHoiToan2,MaCauHoiToan3,MaCauHoiToan4,MaCauHoiToan5,
+	MaCauHoiToan6,MaCauHoiToan7,MaCauHoiToan8,MaCauHoiToan9,MaCauHoiToan10) 
+	VALUES
 	(@MaCauHoi1,@MaCauHoi2,@MaCauHoi3,@MaCauHoi4,@MaCauHoi5,
 	@MaCauHoi6,@MaCauHoi7,@MaCauHoi8,@MaCauHoi9,@MaCauHoi10)
 GO
@@ -557,7 +538,7 @@ AS
 	IF @Type=3
 		SELECT * FROM [DeVan] WHERE MaDeVan=@MaDe AND IsDeleted=0
 GO
---EXECUTE sp_GetSubjectTestById 1,1000
+--EXECUTE sp_GetSubjectTestById 2,2000
 
 --CREATE STORED PROCEDURE TO GET LIST STUDENTS
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetStudentList')
@@ -579,3 +560,52 @@ AS
 	SELECT * FROM [ThiSinh] WHERE MaThiSinh=@MaThiSinh
 GO
 --EXECUTE sp_GetStudentById 'TS0001'
+
+--CREATE STORED PROCEDURE TO GET LIST QUESTION OF SUBJECT TEST
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListQuestionIdOfMathTest')
+DROP PROCEDURE sp_GetListQuestionIdOfMathTest
+GO
+CREATE PROCEDURE sp_GetListQuestionIdOfMathTest
+	@MaDeToan INT
+AS
+	SELECT MaCauHoiToan1,MaCauHoiToan2,MaCauHoiToan3,MaCauHoiToan4,MaCauHoiToan5,
+	MaCauHoiToan6,MaCauHoiToan7,MaCauHoiToan8,MaCauHoiToan9,MaCauHoiToan10
+	FROM [DeToan] WHERE MaDeToan=@MaDeToan AND IsDeleted=0
+GO
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListQuestionIdOfHistoryTest')
+DROP PROCEDURE sp_GetListQuestionIdOfHistoryTest
+GO
+CREATE PROCEDURE sp_GetListQuestionIdOfHistoryTest
+	@MaDeSu INT
+AS
+	SELECT MaCauHoiSu1,MaCauHoiSu2,MaCauHoiSu3,MaCauHoiSu4,MaCauHoiSu5,
+	MaCauHoiSu6,MaCauHoiSu7,MaCauHoiSu8,MaCauHoiSu9,MaCauHoiSu10
+	FROM [DeSu] WHERE MaDeSu=@MaDeSu AND IsDeleted=0
+GO
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListQuestionIdOfLiteratureTest')
+DROP PROCEDURE sp_GetListQuestionIdOfLiteratureTest
+GO
+CREATE PROCEDURE sp_GetListQuestionIdOfLiteratureTest
+	@MaDeVan INT
+AS
+	SELECT MaCauHoiVan1,MaCauHoiVan2,MaCauHoiVan3,MaCauHoiVan4,MaCauHoiVan5,
+	MaCauHoiVan6,MaCauHoiVan7,MaCauHoiVan8,MaCauHoiVan9,MaCauHoiVan10
+	FROM [DeVan] WHERE MaDeVan=@MaDeVan AND IsDeleted=0
+GO
+
+--PROCEDURE GET LIST SUBJECT EXAM ID
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListSubjectExamId')
+DROP PROCEDURE sp_GetListSubjectExamId
+GO
+CREATE PROCEDURE sp_GetListSubjectExamId
+	@MaDe VARCHAR(20)
+AS
+	SELECT * FROM QuanLyDeThi WHERE MaDe=@MaDe AND IsDeleted=0
+GO
+--EXECUTE sp_GetListSubjectExamId '2015DT0002'
+
+
+
+select * from KetQua
+select ts.MaThiSinh,ts.HoTen,ts.NgaySinh,ts.SoChungMinhThu,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
+from ThiSinh as ts inner join KetQua as kq on ts.MaThiSinh=kq.MaThiSinh

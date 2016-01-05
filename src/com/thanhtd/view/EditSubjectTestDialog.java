@@ -44,7 +44,7 @@ public class EditSubjectTestDialog extends javax.swing.JDialog {
         if (deThi != null) {
             jLabel3.setText(monThi);
             jLabel4.setText(deThi.getMaDe() + "");
-            listCauHoi = DbController.getQuestionListInSubjectTest(monThi, deThi.getMaDe());
+            listCauHoi = DbController.getListQuestionInSubjectTest(monThi, deThi.getMaDe());
 
             chtm = new CauHoiTableModel();
             chtm.setData(listCauHoi);
@@ -186,11 +186,11 @@ public class EditSubjectTestDialog extends javax.swing.JDialog {
         if (jTable1.getSelectedRow() != -1) {
             StringBuilder sb = new StringBuilder();
             CauHoi temp = listCauHoi.get(jTable1.getSelectedRow());
-            sb.append("Content: ").append(temp.getNoiDung()).append("\n");
+            sb.append("Content: ").append(temp.getNoiDung()).append("\n\n");
             sb.append("Choice A: ").append(temp.getTraLoi1()).append("\n");
             sb.append("Choice B: ").append(temp.getTraLoi2()).append("\n");
             sb.append("Choice C: ").append(temp.getTraLoi3()).append("\n");
-            sb.append("Choice D: ").append(temp.getTraLoi4()).append("\n");
+            sb.append("Choice D: ").append(temp.getTraLoi4()).append("\n\n");
             sb.append("Answer: ").append(temp.getDapAn());
             jTextArea1.setText(sb.toString());
         }

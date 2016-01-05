@@ -11,25 +11,29 @@ import java.util.Date;
  *
  * @author Thanh Tran
  */
-public class ThiSinh {
+public class ThiSinh implements Comparable<ThiSinh>{
 
     private String MaThiSinh;
     private String HoTen;
     private Date NgaySinh;
     private String SoChungMinhThu;
+    private String DiaChi;
     private String MaDe;
+    private Date NgayPhaiLamBai;
 
     public ThiSinh() {
     }
 
-    public ThiSinh(String MaThiSinh, String HoTen, Date NgaySinh, String SoChungMinhThu, String MaDe) {
+    public ThiSinh(String MaThiSinh, String HoTen, Date NgaySinh, String SoChungMinhThu, String DiaChi, String MaDe, Date NgayPhaiLamBai) {
         this.MaThiSinh = MaThiSinh;
         this.HoTen = HoTen;
         this.NgaySinh = NgaySinh;
         this.SoChungMinhThu = SoChungMinhThu;
+        this.DiaChi = DiaChi;
         this.MaDe = MaDe;
-    }
-
+        this.NgayPhaiLamBai = NgayPhaiLamBai;
+    }    
+    
     public String getMaThiSinh() {
         return MaThiSinh;
     }
@@ -68,5 +72,26 @@ public class ThiSinh {
 
     public void setSoChungMinhThu(String SoChungMinhThu) {
         this.SoChungMinhThu = SoChungMinhThu;
+    }    
+
+    public String getDiaChi() {
+        return DiaChi;
+    }
+
+    public void setDiaChi(String DiaChi) {
+        this.DiaChi = DiaChi;
+    }
+
+    public Date getNgayPhaiLamBai() {
+        return NgayPhaiLamBai;
+    }
+
+    public void setNgayPhaiLamBai(Date NgayPhaiLamBai) {
+        this.NgayPhaiLamBai = NgayPhaiLamBai;
+    }
+
+    @Override
+    public int compareTo(ThiSinh o) {
+        return this.MaThiSinh.compareTo(o.MaThiSinh);
     }
 }
