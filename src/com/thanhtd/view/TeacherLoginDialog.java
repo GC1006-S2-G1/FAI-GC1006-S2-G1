@@ -7,8 +7,6 @@ package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.GiaoVu;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -19,10 +17,10 @@ import org.apache.commons.codec.digest.DigestUtils;
  *
  * @author Thanh Tran
  */
-public class LoginDialog extends javax.swing.JDialog {
+public class TeacherLoginDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form LoginDialog
+     * Creates new form TeacherLoginDialog
      */
     boolean isLogedin = false;
     SortedMap<String, String> listUser = new TreeMap<>();
@@ -30,7 +28,7 @@ public class LoginDialog extends javax.swing.JDialog {
     GiaoVu currentUser = null;
     //String currentPassword;
 
-    public LoginDialog(java.awt.Frame parent, boolean modal, List<GiaoVu> item) {
+    public TeacherLoginDialog(java.awt.Frame parent, boolean modal, List<GiaoVu> item) {
         super(parent, modal);
         initComponents();
         listGiaoVu = item;
@@ -51,7 +49,7 @@ public class LoginDialog extends javax.swing.JDialog {
         jTextField1.setText("");
         jPasswordField1.setText("");
         setLocationRelativeTo(null);
-        setTitle("Login");
+        setTitle("Teacher Login");
     }
 
 //    public String getCurrentPassword() {
@@ -83,6 +81,7 @@ public class LoginDialog extends javax.swing.JDialog {
         jPasswordField1 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Username");
 

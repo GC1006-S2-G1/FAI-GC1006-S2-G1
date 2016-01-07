@@ -16,12 +16,14 @@ import java.util.logging.Logger;
  * @author Thanh Tran
  */
 public class ConnectionUtil {
+    static String URL = "jdbc:sqlserver://localhost:1433;databaseName=Project_S2";
+    static String USERNAME = "sa";
+    static String PASSWORD = "12345678";
 
     public static Connection connectToDb() throws SQLException {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String dbUrl = "jdbc:sqlserver://localhost:1433;databaseName=Project_S2";
-            return DriverManager.getConnection(dbUrl, "sa", "12345678");
+            return DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (ClassNotFoundException ex) {
             //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Connect to Database failed. Please try again!");

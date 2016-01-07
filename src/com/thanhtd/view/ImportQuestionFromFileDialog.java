@@ -6,6 +6,7 @@
 package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
+import com.thanhtd.controller.ExcelController;
 import com.thanhtd.model.CauHoi;
 import java.awt.Dimension;
 import java.io.File;
@@ -40,7 +41,14 @@ public class ImportQuestionFromFileDialog extends javax.swing.JDialog {
         createAndShowUI();
     }
 
-    private void getFromFile(File file) throws IOException {
+    private void getFromExcelFile(File file) {
+        listCauHoi = ExcelController.readFromExcelFile(file);
+        for (CauHoi i : listCauHoi) {
+            i.setMonThi(jComboBox1.getSelectedItem().toString());
+        }
+    }
+
+    private void getFromTextFile(File file) throws IOException {
         List<String> listString = FileUtils.readLines(file, StandardCharsets.UTF_16);
 
         for (int i = 0; i < listString.size(); i++) {
@@ -78,8 +86,8 @@ public class ImportQuestionFromFileDialog extends javax.swing.JDialog {
             }
         }
     }
-    
-    public List<CauHoi> getNewQuestions(){
+
+    public List<CauHoi> getNewQuestions() {
         return listCauHoi;
     }
 
@@ -272,12 +280,12 @@ public class ImportQuestionFromFileDialog extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text file", "txt"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Excel Files", "xls", "xlsx"));
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             jTextField1.setText(selectedFile.getPath());
-
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -287,7 +295,13 @@ public class ImportQuestionFromFileDialog extends javax.swing.JDialog {
         } else {
             try {
                 File selectedFile = new File(jTextField1.getText());
-                getFromFile(selectedFile);
+                if (jTextField1.getText().endsWith("txt")) {
+                    getFromTextFile(selectedFile);
+                } else if (jTextField1.getText().endsWith("xlsx") || jTextField1.getText().endsWith("xls")) {
+                    getFromExcelFile(selectedFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please choose either Text file or Excel file.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 jLabel4.setText(selectedFile.getName());
                 jLabel6.setText(listCauHoi.size() + "");
                 jLabel8.setText(jComboBox1.getSelectedItem().toString());

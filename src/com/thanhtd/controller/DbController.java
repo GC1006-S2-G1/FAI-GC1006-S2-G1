@@ -8,6 +8,8 @@ package com.thanhtd.controller;
 import com.thanhtd.model.CauHoi;
 import com.thanhtd.model.DeThi;
 import com.thanhtd.model.GiaoVu;
+import com.thanhtd.model.KetQua;
+import com.thanhtd.model.QuanLyDeThi;
 import com.thanhtd.model.ThiSinh;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -22,7 +24,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -150,7 +151,10 @@ public class DbController {
             statement.setString(1, item.getTenTaiKhoan());
             statement.setNString(2, item.getHoTen());
             statement.setString(3, item.getEmail());
-            statement.setDate(4, (java.sql.Date) new Date(item.getNgaySinh().getTime()));
+
+            java.sql.Date tempDate = new java.sql.Date(item.getNgaySinh().getTime());
+            statement.setDate(4, tempDate);
+
             statement.setString(5, item.getMobile());
             statement.setNString(6, item.getDiaChi());
             int rowEffected = statement.executeUpdate();
@@ -202,7 +206,7 @@ public class DbController {
             return true;
         } catch (SQLException ex) {
             //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
-            System.err.println("Insert questions from text file to Database failed.");
+            System.err.println("Insert questions from file to Database failed.");
             return false;
         }
     }
@@ -331,7 +335,7 @@ public class DbController {
         try {
             Connection conn = ConnectionUtil.connectToDb();
             List<DeThi> listDeThi = new LinkedList<>();
-            CallableStatement cstm = conn.prepareCall("{call sp_GetAllExamLiterial}");
+            CallableStatement cstm = conn.prepareCall("{call sp_GetAllExamLiterature}");
             ResultSet result = cstm.executeQuery();
             while (result.next()) {
                 DeThi temp = new DeThi();
@@ -554,23 +558,8 @@ public class DbController {
             return false;
         }
     }
-
-    public static void getListGeneralExamId(DefaultListModel list) {
-        try {
-            Connection conn = ConnectionUtil.connectToDb();
-            CallableStatement cstm = conn.prepareCall("{call sp_GetListGeneralExamId}");
-            ResultSet result = cstm.executeQuery();
-            while (result.next()) {
-                list.addElement(result.getString("MaDe"));
-            }
-            conn.close();
-        } catch (SQLException ex) {
-            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
-            System.err.println("Error while get list of General Exam Id.");
-        }
-    }
-
-    public static List<String> getListGeneralExamId2() {
+    
+    public static List<String> getListGeneralExamId() {
         try {
             List<String> listItem = new LinkedList<>();
             Connection conn = ConnectionUtil.connectToDb();
@@ -665,6 +654,117 @@ public class DbController {
         } catch (SQLException ex) {
             //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Error while GetListSubjectExamId on DbController.");
+            return null;
+        }
+    }
+
+    public static List<KetQua> GetResultByStudent(String maThiSinh) {
+        try {
+            List<KetQua> listKetQua = new LinkedList<>();
+            Connection conn = ConnectionUtil.connectToDb();
+            CallableStatement cstm = conn.prepareCall("{call sp_GetResultTestForStudent(?)}");
+            cstm.setString(1, maThiSinh);
+            ResultSet result = cstm.executeQuery();
+            while (result.next()) {
+                ThiSinh tempThiSinh = new ThiSinh();
+                tempThiSinh.setMaThiSinh(result.getString("MaThiSinh"));
+                tempThiSinh.setHoTen(result.getNString("HoTen"));
+                tempThiSinh.setNgaySinh(result.getDate("NgaySinh"));
+                tempThiSinh.setSoChungMinhThu(result.getString("SoChungMinhThu"));
+                tempThiSinh.setMaDe(result.getString("MaDe"));
+
+                KetQua tempKetQua = new KetQua();
+                tempKetQua.setThiSinh(tempThiSinh);
+                tempKetQua.setNgayThi(result.getDate("NgayThi"));
+                tempKetQua.setDiemToan(result.getInt("DiemToan"));
+                tempKetQua.setDiemSu(result.getInt("DiemSu"));
+                tempKetQua.setDiemVan(result.getInt("DiemVan"));
+
+                listKetQua.add(tempKetQua);
+            }
+            return listKetQua;
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error while execute function GetResultByStudent from DbController.");
+            return null;
+        }
+    }
+
+    public static List<KetQua> GetResultByUser() {
+        try {
+            List<KetQua> listKetQua = new LinkedList<>();
+            Connection conn = ConnectionUtil.connectToDb();
+            CallableStatement cstm = conn.prepareCall("{call sp_GetResultTestForUser}");
+            ResultSet result = cstm.executeQuery();
+            while (result.next()) {
+                ThiSinh tempThiSinh = new ThiSinh();
+                tempThiSinh.setMaThiSinh(result.getString("MaThiSinh"));
+                tempThiSinh.setHoTen(result.getNString("HoTen"));
+                tempThiSinh.setNgaySinh(result.getDate("NgaySinh"));
+                tempThiSinh.setSoChungMinhThu(result.getString("SoChungMinhThu"));
+                tempThiSinh.setMaDe(result.getString("MaDe"));
+
+                KetQua tempKetQua = new KetQua();
+                tempKetQua.setThiSinh(tempThiSinh);
+                tempKetQua.setNgayThi(result.getDate("NgayThi"));
+                tempKetQua.setDiemToan(result.getInt("DiemToan"));
+                tempKetQua.setDiemSu(result.getInt("DiemSu"));
+                tempKetQua.setDiemVan(result.getInt("DiemVan"));
+
+                listKetQua.add(tempKetQua);
+            }
+            return listKetQua;
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error while execute function GetResultByUser from DbController.");
+            return null;
+        }
+    }
+
+    public static boolean InsertResultToDb(KetQua ketQua) {
+        try {
+            Connection conn = ConnectionUtil.connectToDb();
+            CallableStatement cstm = conn.prepareCall("{call sp_InsertResultToDb(?,?,?,?,?,?)}");
+            cstm.setString(1, ketQua.getThiSinh().getMaDe());
+            cstm.setString(2, ketQua.getThiSinh().getMaThiSinh());
+
+            java.sql.Date tempDate = new java.sql.Date(ketQua.getNgayThi().getTime());
+            cstm.setDate(3, tempDate);
+
+            cstm.setInt(4, ketQua.getDiemToan());
+            cstm.setInt(5, ketQua.getDiemSu());
+            cstm.setInt(6, ketQua.getDiemVan());
+            int rowEffected = cstm.executeUpdate();
+            return rowEffected > 0;
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error while execute InsertResultToDb from DbController.");
+            return false;
+        }
+    }
+
+    public static List<QuanLyDeThi> getListGeneralExamFromDb() {
+        try {
+            List<QuanLyDeThi> listDeThi = new LinkedList<>();
+            Connection conn = ConnectionUtil.connectToDb();
+            CallableStatement cstm = conn.prepareCall("{call sp_GetListGeneralExam}");
+            ResultSet result = cstm.executeQuery();
+            while (result.next()) {
+                QuanLyDeThi temp = new QuanLyDeThi();
+                temp.setMaDe(result.getString("MaDe"));
+                temp.setTenTaiKhoan(result.getString("TenTaiKhoan"));
+                temp.setMaDeToan(result.getInt("MaDeToan"));
+                temp.setMaDeSu(result.getInt("MaDeSu"));
+                temp.setMaDeVan(result.getInt("MaDeVan"));
+                java.sql.Date tempDate = new java.sql.Date(result.getDate("NgayTaoDe").getTime());
+                temp.setNgayTaoDe(tempDate);
+
+                listDeThi.add(temp);
+            }
+            return listDeThi;
+        } catch (SQLException ex) {
+            //Logger.getLogger(DbController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error while execute getListGeneralExamFromDb from DbController.");
             return null;
         }
     }

@@ -11,3 +11,13 @@ Project Group 1 - GC1006
 - 05Jan2016:
 	+ User and Student can do exam
 	+ ...
+- 07Jan2016:
+	+ Insert result to Db
+	+ View test result	
+	+ Implement Import from excel function
+	+ Other function & GUI...
+	
+- Need to do:
+	+ Edit student dialog
+	+ Report of exam (by date, by subject)
+	+ Add general exam function

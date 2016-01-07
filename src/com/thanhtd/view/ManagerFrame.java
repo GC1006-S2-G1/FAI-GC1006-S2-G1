@@ -13,6 +13,8 @@ import com.thanhtd.model.CauHoi;
 import com.thanhtd.model.CauHoiTableModel;
 import com.thanhtd.model.DeThi;
 import com.thanhtd.model.DeThiTableModel;
+import com.thanhtd.model.QuanLyDeThi;
+import com.thanhtd.model.QuanLyDeThiTableModel;
 import com.thanhtd.model.ThiSinh;
 import com.thanhtd.model.ThiSinhTableModel;
 import java.awt.event.ActionEvent;
@@ -36,46 +38,46 @@ public class ManagerFrame extends javax.swing.JFrame {
     List<DeThi> listDeThi = new LinkedList<>();
     List<CauHoi> filtedList = new LinkedList<>();
     List<ThiSinh> listThiSinh = new LinkedList<>();
+    List<QuanLyDeThi> listDeThiChung = new LinkedList<>();
 
     GiaoVuTableModel atm = new GiaoVuTableModel();
     CauHoiTableModel chtm = new CauHoiTableModel();
     DeThiTableModel dttm = new DeThiTableModel();
     ThiSinhTableModel tstm = new ThiSinhTableModel();
+    QuanLyDeThiTableModel dtctm = new QuanLyDeThiTableModel();
 
     DefaultListModel dlm = new DefaultListModel();
 
     public ManagerFrame() {
         initComponents();
+        
+        listGiaoVu = DbController.getGiaoVuFromDb();
+        listCauHoi = DbController.getListQuestionsFromDB();
+        listThiSinh = DbController.getListStudentsFromDB();
+        listDeThiChung = DbController.getListGeneralExamFromDb();
+        
         createAndShowUI();
     }
 
     private void createAndShowUI() {
-        listGiaoVu = DbController.getGiaoVuFromDb();
-        listCauHoi = DbController.getListQuestionsFromDB();
-        listThiSinh = DbController.getListStudentsFromDB();
-        setupListGeneralExamId();
-
-        atm.setData(listGiaoVu);
-        jTable2.setModel(atm);
-
-        chtm.setData(listCauHoi);
-        jTable1.setModel(chtm);
-
+        ShowTabAccountManager();
         ShowTabQuestionManager();
         ShowTabSubjectTestManager();
         ShowTabStudentManager();
+        ShowTabGeneralExamManager();
 
         setLocationRelativeTo(null);
         setTitle("Manage Application.");
     }
 
-    private void setupListGeneralExamId() {
-        DbController.getListGeneralExamId(dlm);
-        jList1.setModel(dlm);
+    private void ShowTabAccountManager() {
+        atm.setData(listGiaoVu);
+        jTable2.setModel(atm);
     }
 
     private void ShowTabGeneralExamManager() {
-
+        dtctm.setData(listDeThiChung);
+        jTable4.setModel(dtctm);
     }
 
     private void ShowTabStudentManager() {
@@ -121,6 +123,9 @@ public class ManagerFrame extends javax.swing.JFrame {
     }
 
     private void ShowTabQuestionManager() {
+        chtm.setData(listCauHoi);
+        jTable1.setModel(chtm);
+
         List<String> listMonThi = DbController.getListSubject();
         listMonThi.add(0, "All");
         for (String i : listMonThi) {
@@ -171,7 +176,6 @@ public class ManagerFrame extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton3 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -187,8 +191,6 @@ public class ManagerFrame extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jButton8 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
         jScrollPane5 = new javax.swing.JScrollPane();
         jTable4 = new javax.swing.JTable();
         jButton9 = new javax.swing.JButton();
@@ -211,6 +213,7 @@ public class ManagerFrame extends javax.swing.JFrame {
         ));
         jScrollPane6.setViewportView(jTable5);
 
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -244,7 +247,7 @@ public class ManagerFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Filter (by subject)");
 
-        jButton3.setText("Import from text file");
+        jButton3.setText("Import from file");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -258,13 +261,6 @@ public class ManagerFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton12.setText("Import from Excel");
-        jButton12.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton12ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -275,9 +271,7 @@ public class ManagerFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1))
@@ -301,8 +295,7 @@ public class ManagerFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton3)
-                    .addComponent(jButton6)
-                    .addComponent(jButton12))
+                    .addComponent(jButton6))
                 .addContainerGap())
         );
 
@@ -366,7 +359,7 @@ public class ManagerFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Account Manager", jPanel2);
+        jTabbedPane1.addTab("Teacher Manager", jPanel2);
 
         jButton4.setText("Close");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -446,13 +439,6 @@ public class ManagerFrame extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane4.setViewportView(jList1);
-
         jTable4.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -470,25 +456,24 @@ public class ManagerFrame extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 695, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
         );
 
         jButton9.setText("Add");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -513,7 +498,7 @@ public class ManagerFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Full Exam Manager", jPanel4);
+        jTabbedPane1.addTab("General Exam Manager", jPanel4);
 
         jButton10.setText("Close");
         jButton10.addActionListener(new java.awt.event.ActionListener() {
@@ -693,15 +678,17 @@ public class ManagerFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTable6MouseClicked
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        JOptionPane.showMessageDialog(this, "Implemeting fuction...", "Information", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jButton12ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        int dr = JOptionPane.showConfirmDialog(this, "Are you want to create new General Exam?", "Create new General Exam", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (dr == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this, "This fuction will be avaiable in next version.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -714,7 +701,6 @@ public class ManagerFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -724,7 +710,6 @@ public class ManagerFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;

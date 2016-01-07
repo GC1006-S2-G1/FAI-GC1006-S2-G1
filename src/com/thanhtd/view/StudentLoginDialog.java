@@ -21,9 +21,10 @@ public class StudentLoginDialog extends javax.swing.JDialog {
     /**
      * Creates new form StudentLoginDialog
      */
-    SortedMap<String, Date> listStudent;
-    ThiSinh currentStudent;
-    boolean isLoggedIn = false;
+    private SortedMap<String, Date> listStudent;
+    private ThiSinh currentStudent;
+    private boolean isLoggedIn = false;
+    private boolean isTestDay = false;
 
     public StudentLoginDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -46,6 +47,10 @@ public class StudentLoginDialog extends javax.swing.JDialog {
         return isLoggedIn;
     }
 
+    public boolean testDay() {
+        return isTestDay;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,6 +66,7 @@ public class StudentLoginDialog extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Student ID:");
 
@@ -124,13 +130,22 @@ public class StudentLoginDialog extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Login successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
                 currentStudent = DbController.getStudentById(jTextField1.getText().toUpperCase());
                 isLoggedIn = true;
+                isTestDay = true;
                 this.dispose();
             } else if (temp1.after(temp2)) {
-                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nPlease wait to " + temp1.toString() + "\nSee you again.", "Wrong Test Date", JOptionPane.INFORMATION_MESSAGE);
-                System.exit(0);
+                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nPlease wait to " + temp1.toString() + "\nSee you again.", "Wrong Test Date", JOptionPane.INFORMATION_MESSAGE);                
+                currentStudent = DbController.getStudentById(jTextField1.getText().toUpperCase());
+                isTestDay = false;
+                isLoggedIn = true;
+                //System.exit(0);
+                this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nYou missed the test. Poor you!", "Wrong Test Date", JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
+                JOptionPane.showMessageDialog(this, "Your test date is " + temp1.toString() + "\nYou missed the test. Poor you!", "Wrong Test Date", JOptionPane.ERROR_MESSAGE);                
+                currentStudent = DbController.getStudentById(jTextField1.getText().toUpperCase());
+                isTestDay = false;
+                isLoggedIn = true;
+                //System.exit(0);
+                this.dispose();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Wrong Student Id.", "Error", JOptionPane.ERROR_MESSAGE);

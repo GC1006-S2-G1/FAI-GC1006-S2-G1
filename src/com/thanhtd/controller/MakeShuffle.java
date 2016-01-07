@@ -17,7 +17,7 @@ public class MakeShuffle {
 
     public static List<Integer> shuffleArray(List<Integer> item) {
         Random rnd = ThreadLocalRandom.current();
-        List<Integer> ar=item;
+        List<Integer> ar = item;
         for (int i = ar.size() - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap

@@ -250,7 +250,7 @@ INSERT INTO [QuanLyDeThi](MaDe,TenTaiKhoan,NgayTaoDe,MaDeToan,MaDeSu,MaDeVan) VA
 ('2015DT0005','admin','2015-12-28',1000,2000,3001)
 
 INSERT INTO [ThiSinh](MaThiSinh,HoTen,NgaySinh,SoChungMinhThu,DiaChi,MaDe,NgayPhaiLamBai) VALUES
-('TS0001','Admin Noc','1999-04-01','012345678','Ha Noi, Viet Nam','2015DT0001','2016-01-05')
+('TS0001','Admin Noc','1999-04-01','012345678','Ha Noi, Viet Nam','2015DT0001','2016-01-06')
 
 INSERT INTO [KetQua](MaDe,MaThiSinh,NgayThi,DiemToan,DiemSu,DiemVan) VALUES
 ('2015DT0001','TS0001','2016-01-05',5,5,5)
@@ -355,16 +355,6 @@ AS
 	UPDATE [ThiSinh] SET IsDeleted=1 WHERE MaThiSinh=@MaThiSinh
 GO
 --EXECUTE sp_DeleteStudentById 'TS0001'
-
---CREATE STORED PROCEDURE TO GET ALL EXAM ID
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamId')
-DROP PROCEDURE sp_GetAllExamId
-GO
-CREATE PROCEDURE sp_GetAllExamId
-AS
-	SELECT * FROM [QuanLyDeThi] WHERE IsDeleted=0
-GO
---EXECUTE sp_GetAllExamId
 
 --CREATE STORED PROCEDURE TO GET SUBJECT EXAM
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamMath')
@@ -604,8 +594,73 @@ AS
 GO
 --EXECUTE sp_GetListSubjectExamId '2015DT0002'
 
+--CREATE STORED PROCEDURE FOR STUDENT TO VIEW HIS RESULTS
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetResultTestForStudent')
+DROP PROCEDURE sp_GetResultTestForStudent
+GO
+CREATE PROCEDURE sp_GetResultTestForStudent
+	@MaThiSinh VARCHAR(20)
+AS
+	SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
+	ON ts.MaThiSinh=kq.MaThiSinh
+	WHERE ts.MaThiSinh=@MaThiSinh
+GO
+--EXECUTE sp_GetResultTestForStudent TS0001
+
+--CREATE STORED PROCEDURE FOR USER TO VIEW HIS RESULTS
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetResultTestForUser')
+DROP PROCEDURE sp_GetResultTestForUser
+GO
+CREATE PROCEDURE sp_GetResultTestForUser
+AS
+	SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
+	ON ts.MaThiSinh=kq.MaThiSinh
+GO
+--EXECUTE sp_GetResultTestForUser
+
+--CREATE STORED PROCEDURE FOR INSERT SUBJECT MARK TO DATABASE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_InsertResultToDb')
+DROP PROCEDURE sp_InsertResultToDb
+GO
+CREATE PROCEDURE sp_InsertResultToDb
+	@MaDe VARCHAR(20),
+	@MaThiSinh VARCHAR(20),
+	@NgayThi DATE,
+	@DiemToan INT,
+	@DiemSu INT,
+	@DiemVan INT
+AS
+	INSERT INTO [KetQua](MaDe,MaThiSinh,NgayThi,DiemToan,DiemSu,DiemVan) VALUES
+	(@MaDe,@MaThiSinh,@NgayThi,@DiemToan,@DiemSu,@DiemVan)
+GO
+
+--CREATE STORED PROCEDURE FOR GET LIST GENERAL EXAM FROM DATABASE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListGeneralExam')
+DROP PROCEDURE sp_GetListGeneralExam
+GO
+CREATE PROCEDURE sp_GetListGeneralExam
+AS
+	SELECT * FROM QuanLyDeThi WHERE IsDeleted=0
+GO
+--EXECUTE sp_GetListGeneralExam
 
 
-select * from KetQua
-select ts.MaThiSinh,ts.HoTen,ts.NgaySinh,ts.SoChungMinhThu,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
-from ThiSinh as ts inner join KetQua as kq on ts.MaThiSinh=kq.MaThiSinh
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
+	ON ts.MaThiSinh=kq.MaThiSinh
+	where kq.NgayThi='2016-01-05'

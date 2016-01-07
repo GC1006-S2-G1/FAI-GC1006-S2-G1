@@ -7,9 +7,11 @@ package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.CauHoi;
+import com.thanhtd.model.KetQua;
 import java.util.List;
 import java.util.TreeMap;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -67,6 +69,11 @@ public class ChooseSubjectTestForStudentDialog extends javax.swing.JDialog {
                 jList1MouseClicked(evt);
             }
         });
+        jList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jList1ValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(jList1);
 
         jButton1.setText("Close");
@@ -114,6 +121,7 @@ public class ChooseSubjectTestForStudentDialog extends javax.swing.JDialog {
                     beginTest.getContentPane();
                     beginTest.setVisible(true);
                     if (beginTest.getFinished()) {
+                        listSubjectExam.put(jList1.getSelectedValue(), beginTest.getResult());
                         dlm.removeElement("Math");
                         jList1.setModel(dlm);
                     }
@@ -124,6 +132,7 @@ public class ChooseSubjectTestForStudentDialog extends javax.swing.JDialog {
                     beginTest.getContentPane();
                     beginTest.setVisible(true);
                     if (beginTest.getFinished()) {
+                        listSubjectExam.put(jList1.getSelectedValue(), beginTest.getResult());
                         dlm.removeElement("Literature");
                         jList1.setModel(dlm);
                     }
@@ -134,6 +143,7 @@ public class ChooseSubjectTestForStudentDialog extends javax.swing.JDialog {
                     beginTest.getContentPane();
                     beginTest.setVisible(true);
                     if (beginTest.getFinished()) {
+                        listSubjectExam.put(jList1.getSelectedValue(), beginTest.getResult());
                         dlm.removeElement("History");
                         jList1.setModel(dlm);
                     }
@@ -141,6 +151,24 @@ public class ChooseSubjectTestForStudentDialog extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_jList1MouseClicked
+
+    private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList1ValueChanged
+        if (dlm.size() == 0) {
+            JOptionPane.showMessageDialog(this, "Congratulation, you just finished your exam. Go to Test => View Results to see your results. Good luck!", "Congratulation", JOptionPane.INFORMATION_MESSAGE);
+            KetQua temp = new KetQua();
+            temp.setThiSinh(MainFrame.currentStudent);
+            temp.setNgayThi(MainFrame.currentStudent.getNgayPhaiLamBai());
+            temp.setDiemToan(listSubjectExam.get("Math"));
+            temp.setDiemSu(listSubjectExam.get("History"));
+            temp.setDiemVan(listSubjectExam.get("Literature"));
+            if (DbController.InsertResultToDb(temp)) {
+                JOptionPane.showMessageDialog(this, "Your result saved to Database.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Cannot save your result to Database. Please contact to your teacher.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            this.dispose();
+        }
+    }//GEN-LAST:event_jList1ValueChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

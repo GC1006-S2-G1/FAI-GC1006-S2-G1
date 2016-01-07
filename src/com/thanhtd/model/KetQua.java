@@ -5,25 +5,37 @@
  */
 package com.thanhtd.model;
 
+import java.util.Date;
+
 /**
  *
  * @author Thanh Tran
  */
 public class KetQua {
 
+    private ThiSinh thiSinh;
+    private Date ngayThi;
     private int DiemToan;
     private int DiemSu;
     private int DiemVan;
-    private ThiSinh thiSinh;
 
     public KetQua() {
     }
 
-    public KetQua(int DiemToan, int DiemSu, int DiemVan, ThiSinh thiSinh) {
+    public KetQua(ThiSinh thiSinh, Date ngayThi, int DiemToan, int DiemSu, int DiemVan) {
+        this.thiSinh = thiSinh;
+        this.ngayThi = ngayThi;
         this.DiemToan = DiemToan;
         this.DiemSu = DiemSu;
         this.DiemVan = DiemVan;
-        this.thiSinh = thiSinh;
+    }
+
+    public Date getNgayThi() {
+        return ngayThi;
+    }
+
+    public void setNgayThi(Date ngayThi) {
+        this.ngayThi = ngayThi;
     }
 
     public int getDiemToan() {
@@ -57,5 +69,4 @@ public class KetQua {
     public void setThiSinh(ThiSinh thiSinh) {
         this.thiSinh = thiSinh;
     }
-
 }

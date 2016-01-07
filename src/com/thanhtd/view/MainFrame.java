@@ -18,7 +18,6 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * Creates new form MainFrame
      */
-    //public static String currentPassword;
     public static GiaoVu currentUser = null;
     public static ThiSinh currentStudent = null;
 
@@ -31,7 +30,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void createAndShowUI() {
         jMenu2.setVisible(false);
         jMenuItem5.setEnabled(false);
-        jMenuItem6.setEnabled(false);
+        jMenuItem9.setEnabled(false);
         information();
     }
 
@@ -39,20 +38,27 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setLineWrap(true);
         jTextArea1.setEditable(false);
-        jTextArea1.setText("DEMO VERSION\n\n- Login as Teacher: \n\t-User: admin \n\t-Pass: admin\n\n- Login as Student: TS0001 (Examination date: 05Jan2016)");
+        jTextArea1.setText("DEMO VERSION\n\n- Login as Teacher: \n\t- User: admin \n\t- Pass: admin\n\n- Login as Student: TS0001 (Examination date: 05Jan2016)");
     }
 
     private void uiAsTeacher() {
         jMenu2.setVisible(true);
-        jMenuItem3.setEnabled(false);
+        jMenu4.setVisible(false);
+        jMenuItem8.setEnabled(false);
         jMenuItem5.setEnabled(true);
-        jMenuItem6.setEnabled(true);
+        jMenuItem9.setEnabled(true);
     }
 
-    private void uiAsStudent() {
-        jMenuItem3.setEnabled(false);
+    private void uiAsStudent(boolean isTestDay) {
+        jMenu5.setVisible(false);
         jMenuItem5.setEnabled(true);
-        jMenuItem6.setEnabled(false);
+        jMenuItem7.setEnabled(false);
+
+        if (isTestDay) {
+            jMenuItem4.setEnabled(true);
+        } else {
+            jMenuItem4.setEnabled(false);
+        }
     }
 
     /**
@@ -68,9 +74,12 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -79,6 +88,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FPT University Test Online System");
+        setResizable(false);
 
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -86,22 +96,6 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTextArea1);
 
         jMenu1.setText("File");
-
-        jMenuItem3.setText("Teacher Login");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem3);
-
-        jMenuItem6.setText("Change Password");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem6);
 
         jMenuItem1.setText("Exit");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -112,6 +106,38 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu5.setText("Teacher");
+
+        jMenuItem8.setText("Login");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem8);
+
+        jMenuItem9.setText("Change Password");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem9);
+
+        jMenuBar1.add(jMenu5);
+
+        jMenu4.setText("Student");
+
+        jMenuItem7.setText("Login (by Student ID)");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem7);
+
+        jMenuBar1.add(jMenu4);
 
         jMenu2.setText("Manager");
 
@@ -176,38 +202,23 @@ public class MainFrame extends javax.swing.JFrame {
         frm.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        LoginDialog loginDialog = new LoginDialog(this, true, DbController.getGiaoVuFromDb());
-        loginDialog.getContentPane();
-        loginDialog.setVisible(true);
-        if (loginDialog.checkLogin()) {
-            uiAsTeacher();
-            //currentPassword = loginDialog.getCurrentPassword();
-            currentUser = loginDialog.getCurrentUser();
-        }
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        ChangePassDialog changePass = new ChangePassDialog(this, true);
-        changePass.getContentPane();
-        changePass.setVisible(true);
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         if (currentUser == null) {
             StudentLoginDialog studentLogin = new StudentLoginDialog(this, true);
             studentLogin.getContentPane();
             studentLogin.setVisible(true);
             if (studentLogin.isLogin()) {
-                uiAsStudent();
+                uiAsStudent(studentLogin.testDay());
                 currentStudent = studentLogin.getThiSinh();
 
-                ChooseSubjectTestForStudentDialog studentBeginTest = new ChooseSubjectTestForStudentDialog(this, true);
-                studentBeginTest.getContentPane();
-                studentBeginTest.setVisible(true);
+                if (studentLogin.testDay()) {
+                    ChooseSubjectTestForStudentDialog studentBeginTest = new ChooseSubjectTestForStudentDialog(this, true);
+                    studentBeginTest.getContentPane();
+                    studentBeginTest.setVisible(true);
+                }
             }
         } else {
-            ChooseSubjectTestForUserDialog userBeginTest = new ChooseSubjectTestForUserDialog(this, true);
+            ChooseSubjectTestForTeacherDialog userBeginTest = new ChooseSubjectTestForTeacherDialog(this, true);
             userBeginTest.getContentPane();
             userBeginTest.setVisible(true);
         }
@@ -218,6 +229,33 @@ public class MainFrame extends javax.swing.JFrame {
         resultDialog.getContentPane();
         resultDialog.setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        StudentLoginDialog studentLogin = new StudentLoginDialog(this, true);
+        studentLogin.getContentPane();
+        studentLogin.setVisible(true);
+        if (studentLogin.isLogin()) {
+            uiAsStudent(studentLogin.testDay());
+            currentStudent = studentLogin.getThiSinh();
+            studentLogin.dispose();
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        TeacherLoginDialog loginDialog = new TeacherLoginDialog(this, true, DbController.getGiaoVuFromDb());
+        loginDialog.getContentPane();
+        loginDialog.setVisible(true);
+        if (loginDialog.checkLogin()) {
+            uiAsTeacher();
+            currentUser = loginDialog.getCurrentUser();
+        }
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        ChangePassDialog changePass = new ChangePassDialog(this, true);
+        changePass.getContentPane();
+        changePass.setVisible(true);
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -258,13 +296,16 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
