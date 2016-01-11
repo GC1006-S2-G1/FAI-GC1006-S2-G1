@@ -27,4 +27,9 @@ public class MakeShuffle {
         }
         return ar.subList(0, 10);
     }
+
+    public static int getRandom(List<Integer> list) {
+        int index = new Random().nextInt(list.size());
+        return list.get(index);
+    }
 }

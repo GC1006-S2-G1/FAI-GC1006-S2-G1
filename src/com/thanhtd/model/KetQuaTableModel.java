@@ -5,6 +5,8 @@
  */
 package com.thanhtd.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -37,6 +39,7 @@ public class KetQuaTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         KetQua ketQua = listKetQua.get(rowIndex);
         switch (columnIndex) {
             case 0:
@@ -46,11 +49,11 @@ public class KetQuaTableModel extends AbstractTableModel {
             case 2:
                 return ketQua.getThiSinh().getSoChungMinhThu();
             case 3:
-                return ketQua.getThiSinh().getNgaySinh().toString();
+                return dateFormat.format(ketQua.getThiSinh().getNgaySinh());
             case 4:
                 return ketQua.getThiSinh().getMaDe();
             case 5:
-                return ketQua.getNgayThi().toString();
+                return dateFormat.format(ketQua.getNgayThi());
             case 6:
                 return ketQua.getDiemToan();
             case 7:

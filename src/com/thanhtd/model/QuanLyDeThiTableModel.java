@@ -5,6 +5,8 @@
  */
 package com.thanhtd.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -37,6 +39,7 @@ public class QuanLyDeThiTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         QuanLyDeThi temp = listDeThiChung.get(rowIndex);
         switch (columnIndex) {
             case 0:
@@ -44,7 +47,7 @@ public class QuanLyDeThiTableModel extends AbstractTableModel {
             case 1:
                 return temp.getTenTaiKhoan();
             case 2:
-                return temp.getNgayTaoDe();
+                return dateFormat.format(temp.getNgayTaoDe());
             case 3:
                 return temp.getMaDeToan();
             case 4:

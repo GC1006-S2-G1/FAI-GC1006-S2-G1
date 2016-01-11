@@ -19,6 +19,7 @@ import com.thanhtd.model.ThiSinh;
 import com.thanhtd.model.ThiSinhTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -50,13 +51,13 @@ public class ManagerFrame extends javax.swing.JFrame {
 
     public ManagerFrame() {
         initComponents();
-        
+
         listGiaoVu = DbController.getGiaoVuFromDb();
         listCauHoi = DbController.getListQuestionsFromDB();
         listThiSinh = DbController.getListStudentsFromDB();
         listDeThiChung = DbController.getListGeneralExamFromDb();
-        
-        createAndShowUI();
+
+        //createAndShowUI();
     }
 
     private void createAndShowUI() {
@@ -126,10 +127,12 @@ public class ManagerFrame extends javax.swing.JFrame {
         chtm.setData(listCauHoi);
         jTable1.setModel(chtm);
 
-        List<String> listMonThi = DbController.getListSubject();
-        listMonThi.add(0, "All");
-        for (String i : listMonThi) {
-            jComboBox1.addItem(i);
+        if (jComboBox1.getItemCount() == 0) {
+            List<String> listMonThi = DbController.getListSubject();
+            listMonThi.add(0, "All");
+            for (String i : listMonThi) {
+                jComboBox1.addItem(i);
+            }
         }
 
         jComboBox1.setSelectedIndex(0);
@@ -194,6 +197,7 @@ public class ManagerFrame extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         jTable4 = new javax.swing.JTable();
         jButton9 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
@@ -475,6 +479,13 @@ public class ManagerFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton12.setText("Delete");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -482,6 +493,8 @@ public class ManagerFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton8)
                 .addContainerGap())
@@ -494,7 +507,8 @@ public class ManagerFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton8)
-                    .addComponent(jButton9))
+                    .addComponent(jButton9)
+                    .addComponent(jButton12))
                 .addContainerGap())
         );
 
@@ -526,6 +540,11 @@ public class ManagerFrame extends javax.swing.JFrame {
         jScrollPane7.setViewportView(jTable6);
 
         jButton11.setText("Add");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -590,6 +609,23 @@ public class ManagerFrame extends javax.swing.JFrame {
             EditQuestionDialog editQuestion = new EditQuestionDialog(this, true, temp);
             editQuestion.getContentPane();
             editQuestion.setVisible(true);
+            if (editQuestion.isDeletedQuestion()) {
+                if (jComboBox1.getSelectedIndex() != 0) {
+                    filtedList.remove(temp);
+                } else {
+                    listCauHoi.remove(temp);
+                }
+                chtm.fireTableDataChanged();
+            }
+            if (editQuestion.isUpdatedQuestion()) {
+                int index = jTable1.getSelectedRow();
+                if (jComboBox1.getSelectedIndex() != 0) {
+                    filtedList.set(index, editQuestion.getCauHoi());
+                } else {
+                    listCauHoi.set(index, editQuestion.getCauHoi());
+                }
+                chtm.fireTableDataChanged();
+            }
         }
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -619,6 +655,11 @@ public class ManagerFrame extends javax.swing.JFrame {
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         atm.fireTableDataChanged();
         chtm.fireTableDataChanged();
+        dttm.fireTableDataChanged();
+        tstm.fireTableDataChanged();
+        dtctm.fireTableDataChanged();
+
+        createAndShowUI();
     }//GEN-LAST:event_formWindowActivated
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -675,20 +716,69 @@ public class ManagerFrame extends javax.swing.JFrame {
             EditStudentDialog editStudent = new EditStudentDialog(this, true, temp);
             editStudent.getContentPane();
             editStudent.setVisible(true);
+            if (editStudent.isDeletedStudent()) {
+                listThiSinh.remove(jTable6.getSelectedRow());
+                tstm.fireTableDataChanged();
+            }
         }
     }//GEN-LAST:event_jTable6MouseClicked
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         int dr = JOptionPane.showConfirmDialog(this, "Are you want to create new General Exam?", "Create new General Exam", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (dr == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(this, "This fuction will be avaiable in next version.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(this, "This fuction will be avaiable in next version.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            QuanLyDeThi temp = new QuanLyDeThi();
+            String input = JOptionPane.showInputDialog(this, "Input new General Exam ID", "New General Exam", JOptionPane.QUESTION_MESSAGE).toUpperCase();
+            if (listDeThiChung.contains(input)) {
+                temp.setMaDe(input);
+                temp.setTenTaiKhoan(MainFrame.currentUser.getTenTaiKhoan());
+                temp.setNgayTaoDe(new Date(System.currentTimeMillis()));
+                temp.setMaDeToan(MakeShuffle.getRandom(DbController.getListMathExamId()));
+                temp.setMaDeSu(MakeShuffle.getRandom(DbController.getListHistoryExamId()));
+                temp.setMaDeVan(MakeShuffle.getRandom(DbController.getListLiteratureExamId()));
+                if (DbController.insertNewGeneralExamToDb(temp)) {
+                    JOptionPane.showMessageDialog(this, "New General Exam created successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    listDeThiChung.add(temp);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Create New General Exam failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "This General Exam ID existed.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        int index = jTable4.getSelectedRow();
+        if (index != -1) {
+            int dr = JOptionPane.showConfirmDialog(this, "Are you sure want to delete this General Exam?", "Delete General Exam", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (dr == JOptionPane.YES_OPTION) {
+                if (DbController.deleteGeneralExamById(listDeThiChung.get(index).getMaDe())) {
+                    JOptionPane.showMessageDialog(this, "General Exam deleted.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    listDeThiChung.remove(index);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Delete failed.", "Information", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selec a General Exam to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        EditStudentDialog editStudentDialog = new EditStudentDialog(this, true, null);
+        editStudentDialog.getContentPane();
+        editStudentDialog.setVisible(true);
+        if ((!editStudentDialog.isVisible() && editStudentDialog.getStudent() != null)) {
+            listThiSinh.add(editStudentDialog.getStudent());
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

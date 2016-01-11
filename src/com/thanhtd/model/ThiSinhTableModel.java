@@ -5,6 +5,8 @@
  */
 package com.thanhtd.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -32,11 +34,12 @@ public class ThiSinhTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 6;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         ThiSinh temp = listThiSinh.get(rowIndex);
         switch (columnIndex) {
             case 0:
@@ -44,11 +47,13 @@ public class ThiSinhTableModel extends AbstractTableModel {
             case 1:
                 return temp.getHoTen();
             case 2:
-                return temp.getNgaySinh();
+                return dateFormat.format(temp.getNgaySinh());
             case 3:
                 return temp.getSoChungMinhThu();
             case 4:
                 return temp.getMaDe();
+            case 5:
+                return dateFormat.format(temp.getNgayPhaiLamBai());
             default:
                 return "";
         }
@@ -67,6 +72,8 @@ public class ThiSinhTableModel extends AbstractTableModel {
                 return "Identify Number";
             case 4:
                 return "General Exam Id";
+            case 5:
+                return "Exam Date";
             default:
                 return "";
         }

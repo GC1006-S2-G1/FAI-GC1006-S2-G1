@@ -5,6 +5,8 @@
  */
 package com.thanhtd.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -41,6 +43,7 @@ public class GiaoVuTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         GiaoVu temp = listTaiKhoan.get(rowIndex);
         switch (columnIndex) {
             case 0:
@@ -50,7 +53,7 @@ public class GiaoVuTableModel extends AbstractTableModel {
             case 2:
                 return temp.getEmail();
             case 3:
-                return temp.getNgaySinh();
+                return dateFormat.format(temp.getNgaySinh());
             case 4:
                 return temp.getMobile();
             default:

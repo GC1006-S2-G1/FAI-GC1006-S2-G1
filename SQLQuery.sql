@@ -291,15 +291,34 @@ AS
 GO
 --EXECUTE sp_addQuestion N'Math',N'Test câu hỏi Toán',N'Lựa chọn 1',N'Lựa chọn 2',N'Lựa chọn 3',N'Lựa chọn 4',3
 
---CREATE STORED PROCEDURE TO ADD NewQuestionFromFile
+--CREATE STORED PROCEDURE TO GET LIST ALL QUESTIONS
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllQuestions')
 DROP PROCEDURE sp_GetAllQuestions
 GO
 CREATE PROCEDURE sp_GetAllQuestions
 AS
-	SELECT * FROM [NganHangCauHoi]
+	SELECT * FROM [NganHangCauHoi] WHERE IsDeleted=0
 GO
 --EXECUTE sp_GetAllQuestions
+
+--CREATE STORED PROCEDURE TO UPDATE QUESTION
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_UpdateQuestion')
+DROP PROCEDURE sp_UpdateQuestion
+GO
+CREATE PROCEDURE sp_UpdateQuestion
+	@MaCauHoi INT,
+	@MonThi NVARCHAR(50),
+	@NoiDung NVARCHAR(MAX),
+	@TraLoi1 NVARCHAR(MAX),
+	@TraLoi2 NVARCHAR(MAX),
+	@TraLoi3 NVARCHAR(MAX),
+	@TraLoi4 NVARCHAR(MAX),
+	@DapAn INT
+AS
+	UPDATE [NganHangCauHoi] SET MonThi=@MonThi,NoiDung=@NoiDung,
+	TraLoi1=@TraLoi1,TraLoi2=@TraLoi2,TraLoi3=@TraLoi3,TraLoi4=@TraLoi4,DapAn=@DapAn
+	WHERE MaCauHoi=@MaCauHoi
+GO
 
 --CREATE STORED PROCEDURE TO GET LAST QUESTIONID
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetLastQuestionId')
@@ -310,6 +329,17 @@ AS
 	SELECT TOP 1 [MaCauHoi] FROM [NganHangCauHoi] ORDER BY [MaCauHoi] DESC
 GO
 --EXECUTE sp_GetLastQuestionId
+
+--CREATE STORED PROCEDURE TO DELETE QUESTION BY SUBJECT NAME & ID
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_DeleteQuestionById')
+DROP PROCEDURE sp_DeleteQuestionById
+GO
+CREATE PROCEDURE sp_DeleteQuestionById
+	@MaCauHoi INT
+AS
+	UPDATE [NganHangCauHoi] SET IsDeleted=1 WHERE MaCauHoi=@MaCauHoi
+GO
+--EXECUTE sp_DeleteQuestionById 1
 
 --CREATE STORED PROCEDURE TO GET CURRENT USER
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetCurrentUser')
@@ -357,27 +387,27 @@ GO
 --EXECUTE sp_DeleteStudentById 'TS0001'
 
 --CREATE STORED PROCEDURE TO GET SUBJECT EXAM
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamMath')
-DROP PROCEDURE sp_GetAllExamMath
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllMathExam')
+DROP PROCEDURE sp_GetAllMathExam
 GO
-CREATE PROCEDURE sp_GetAllExamMath
+CREATE PROCEDURE sp_GetAllMathExam
 AS
 	SELECT * FROM [DeToan] WHERE IsDeleted=0
 GO
 --EXECUTE sp_GetAllExamMath
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamHistory')
-DROP PROCEDURE sp_GetAllExamHistory
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllHistoryExam')
+DROP PROCEDURE sp_GetAllHistoryExam
 GO
-CREATE PROCEDURE sp_GetAllExamHistory
+CREATE PROCEDURE sp_GetAllHistoryExam
 AS
 	SELECT * FROM [DeSu] WHERE IsDeleted=0
 GO
 --EXECUTE sp_GetAllExamHistory
 
-IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllExamLiterature')
-DROP PROCEDURE sp_GetAllExamLiterature
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetAllLiteratureExam')
+DROP PROCEDURE sp_GetAllLiteratureExam
 GO
-CREATE PROCEDURE sp_GetAllExamLiterature
+CREATE PROCEDURE sp_GetAllLiteratureExam
 AS
 	SELECT * FROM [DeVan] WHERE IsDeleted=0
 GO
@@ -530,15 +560,25 @@ AS
 GO
 --EXECUTE sp_GetSubjectTestById 2,2000
 
---CREATE STORED PROCEDURE TO GET LIST STUDENTS
+--CREATE STORED PROCEDURE TO GET LIST STUDENTS INCLUDE DELETED STUDENT
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetStudentList')
 DROP PROCEDURE sp_GetStudentList
 GO
 CREATE PROCEDURE sp_GetStudentList
 AS
-	SELECT * FROM [ThiSinh] WHERE IsDeleted=0
+	SELECT * FROM [ThiSinh]
 GO
 --EXECUTE sp_GetStudentList
+
+--CREATE STORED PROCEDURE TO GET LIST STUDENTS
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetStudentListForLogin')
+DROP PROCEDURE sp_GetStudentListForLogin
+GO
+CREATE PROCEDURE sp_GetStudentListForLogin
+AS
+	SELECT * FROM [ThiSinh] WHERE IsDeleted=0
+GO
+--EXECUTE sp_GetStudentListForLogin
 
 --CREATE STORED PROCEDURE TO GET STUDENTS BY ID
 IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetStudentById')
@@ -601,10 +641,10 @@ GO
 CREATE PROCEDURE sp_GetResultTestForStudent
 	@MaThiSinh VARCHAR(20)
 AS
-	SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
-	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
-	ON ts.MaThiSinh=kq.MaThiSinh
-	WHERE ts.MaThiSinh=@MaThiSinh
+	SELECT TS.MaThiSinh,TS.HoTen,TS.SoChungMinhThu,TS.NgaySinh,TS.MaDe,KQ.NgayThi,KQ.DiemToan,KQ.DiemSu,KQ.DiemVan,(KQ.DiemToan+KQ.DiemSu+KQ.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS TS INNER JOIN KetQua AS KQ
+	ON TS.MaThiSinh=KQ.MaThiSinh
+	WHERE TS.MaThiSinh=@MaThiSinh
 GO
 --EXECUTE sp_GetResultTestForStudent TS0001
 
@@ -614,9 +654,9 @@ DROP PROCEDURE sp_GetResultTestForUser
 GO
 CREATE PROCEDURE sp_GetResultTestForUser
 AS
-	SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
-	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
-	ON ts.MaThiSinh=kq.MaThiSinh
+	SELECT TS.MaThiSinh,TS.HoTen,TS.SoChungMinhThu,TS.NgaySinh,TS.MaDe,KQ.NgayThi,KQ.DiemToan,KQ.DiemSu,KQ.DiemVan,(KQ.DiemToan+KQ.DiemSu+KQ.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS TS INNER JOIN KetQua AS KQ
+	ON TS.MaThiSinh=KQ.MaThiSinh
 GO
 --EXECUTE sp_GetResultTestForUser
 
@@ -646,21 +686,93 @@ AS
 GO
 --EXECUTE sp_GetListGeneralExam
 
+--CREATE STORED PROCEDURE FOR INSERT NEW GENERAL EXAM TO DATABASE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_InsertNewGeneralExam')
+DROP PROCEDURE sp_InsertNewGeneralExam
+GO
+CREATE PROCEDURE sp_InsertNewGeneralExam
+	@MaDe VARCHAR(20),
+	@TenTaiKhoan VARCHAR(50),
+	@NgayTaoDe DATE,
+	@MaDeToan INT,
+	@MaDeSu INT,
+	@MaDeVan INT
+AS
+	INSERT INTO [QuanLyDeThi](MaDe,TenTaiKhoan,NgayTaoDe,MaDeToan,MaDeSu,MaDeVan) VALUES
+	(@MaDe,@TenTaiKhoan,@NgayTaoDe,@MaDeToan,@MaDeSu,@MaDeVan)
+GO
 
+--CREATE STORED PROCEDURE FOR DELETE GENERAL EXAM BY ID
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_DeleteGeneralExamById')
+DROP PROCEDURE sp_DeleteGeneralExamById
+GO
+CREATE PROCEDURE sp_DeleteGeneralExamById
+	@MaDe VARCHAR(20)
+AS
+	UPDATE [QuanLyDeThi] SET IsDeleted=1 WHERE MaDe=@MaDe
+GO
+--EXECUTE sp_DeleteGeneralExamById '2015TS0006'
 
+--CREATE STORED PROCEDURE FOR ADD NEW STUDENT TO DATABASE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_AddNewStudent')
+DROP PROCEDURE sp_AddNewStudent
+GO
+CREATE PROCEDURE sp_AddNewStudent
+	@MaThiSinh VARCHAR(20),
+	@HoTen NVARCHAR(200),
+	@NgaySinh DATE,
+	@SoChungMinhThu VARCHAR(50),
+	@DiaChi NVARCHAR(MAX),
+	@MaDe VARCHAR(20),
+	@NgayPhaiLamBai DATE
 
+AS
+	INSERT INTO [ThiSinh](MaThiSinh,HoTen,NgaySinh,SoChungMinhThu,DiaChi,MaDe,NgayPhaiLamBai) VALUES
+	(@MaThiSinh,@HoTen,@NgaySinh,@SoChungMinhThu,@DiaChi,@MaDe,@NgayPhaiLamBai)
+GO
 
+--CREATE STORED PROCEDURE FOR UPDATE STUDENT INFORMATION TO DATABASE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_UpdateStudent')
+DROP PROCEDURE sp_UpdateStudent
+GO
+CREATE PROCEDURE sp_UpdateStudent
+	@MaThiSinh VARCHAR(20),
+	@HoTen NVARCHAR(200),
+	@NgaySinh DATE,
+	@SoChungMinhThu VARCHAR(50),
+	@DiaChi NVARCHAR(MAX),
+	@MaDe VARCHAR(20),
+	@NgayPhaiLamBai DATE
+AS
+	UPDATE [ThiSinh] SET HoTen=@HoTen,NgaySinh=@NgaySinh,SoChungMinhThu=@SoChungMinhThu,
+	DiaChi=@DiaChi,MaDe=@MaDe,NgayPhaiLamBai=@NgayPhaiLamBai
+	WHERE MaThiSinh=@MaThiSinh
+GO
 
+--CREATE STORED PROCEDURE FOR USER GET LIST STUDENT PASS BY DATE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListStudentPassedByDate')
+DROP PROCEDURE sp_GetListStudentPassedByDate
+GO
+CREATE PROCEDURE sp_GetListStudentPassedByDate
+	@NgayThi DATE
+AS
+	SELECT TS.MaThiSinh,TS.HoTen,TS.SoChungMinhThu,TS.NgaySinh,TS.MaDe,KQ.NgayThi,KQ.DiemToan,KQ.DiemSu,KQ.DiemVan,(KQ.DiemToan+KQ.DiemSu+KQ.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS TS INNER JOIN KetQua AS KQ
+	ON TS.MaThiSinh=KQ.MaThiSinh
+	WHERE KQ.NgayThi=@NgayThi AND KQ.DiemToan>=5 AND KQ.DiemSu>=5 AND kq.DiemVan>=5
+GO
+--EXECUTE sp_GetListStudentPassedByDate '2016-01-05'
 
-
-
-
-
-
-
-
-
-SELECT ts.MaThiSinh,ts.HoTen,ts.SoChungMinhThu,ts.NgaySinh,ts.MaDe,kq.NgayThi,kq.DiemToan,kq.DiemSu,kq.DiemVan,(kq.DiemToan+kq.DiemSu+kq.DiemVan) AS 'TongDiem'
-	FROM ThiSinh AS ts INNER JOIN KetQua AS kq
-	ON ts.MaThiSinh=kq.MaThiSinh
-	where kq.NgayThi='2016-01-05'
+--CREATE STORED PROCEDURE FOR USER GET LIST STUDENT FAILED BY DATE
+IF EXISTS (SELECT * FROM sys.procedures WHERE name='sp_GetListStudentFailedByDate')
+DROP PROCEDURE sp_GetListStudentFailedByDate
+GO
+CREATE PROCEDURE sp_GetListStudentFailedByDate
+	@NgayThi DATE
+AS
+	SELECT TS.MaThiSinh,TS.HoTen,TS.SoChungMinhThu,TS.NgaySinh,TS.MaDe,KQ.NgayThi,KQ.DiemToan,KQ.DiemSu,KQ.DiemVan,(KQ.DiemToan+KQ.DiemSu+KQ.DiemVan) AS 'TongDiem'
+	FROM ThiSinh AS TS INNER JOIN KetQua AS KQ
+	ON TS.MaThiSinh=KQ.MaThiSinh
+	WHERE KQ.NgayThi=@NgayThi AND (KQ.DiemToan<5 OR KQ.DiemSu<5 OR kq.DiemVan<5)
+GO
+--EXECUTE sp_GetListStudentFailedByDate '2016-01-05'

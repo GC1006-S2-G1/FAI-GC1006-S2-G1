@@ -7,8 +7,12 @@ package com.thanhtd.view;
 
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.ThiSinh;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  *
@@ -20,10 +24,13 @@ public class EditStudentDialog extends javax.swing.JDialog {
      * Creates new form EditStudentDialog
      */
     private ThiSinh thisinh = null;
+    private List<String> listGeneralExamId;
+    private boolean isDeleted = false;
 
     public EditStudentDialog(java.awt.Frame parent, boolean modal, ThiSinh item) {
         super(parent, modal);
         initComponents();
+        listGeneralExamId = DbController.getListGeneralExamId();
 
         createAndShowUI();
         if (item != null) {
@@ -39,9 +46,14 @@ public class EditStudentDialog extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setLineWrap(true);
+
+        for (String i : listGeneralExamId) {
+            jComboBox1.addItem(i);
+        }
     }
 
     private void showInformation() {
+        jTextField3.setEditable(false);
         jTextField3.setText(thisinh.getMaThiSinh());
         jTextField1.setText(thisinh.getHoTen());
         jDateChooser1.setDate(thisinh.getNgaySinh());
@@ -49,25 +61,110 @@ public class EditStudentDialog extends javax.swing.JDialog {
         jDateChooser2.setDate(thisinh.getNgayPhaiLamBai());
         jTextArea1.setText(thisinh.getDiaChi());
         setEnableComponent(false);
+
+        for (int i = 0; i < listGeneralExamId.size(); i++) {
+            if (thisinh.getMaDe().equals(listGeneralExamId.get(i))) {
+                jComboBox1.setSelectedIndex(i);
+            }
+        }
+
+        jButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setEnableComponent(true);
+                jButton3.setText("Save");
+                jButton2.setVisible(false);
+                jButton3.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (!(jTextField1.getText().isEmpty() || jTextField2.getText().isEmpty())) {
+                            if (jDateChooser1.getDate().after(new Date(System.currentTimeMillis()))) {
+                                JOptionPane.showMessageDialog(null, "Date of Birth can't be the day after today.", "Error", JOptionPane.ERROR_MESSAGE);
+                            } else if (DateUtils.isSameDay(jDateChooser1.getDate(), new Date(System.currentTimeMillis()))) {
+                                JOptionPane.showMessageDialog(null, "Date of Birth can't be today.", "Error", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                thisinh.setHoTen(jTextField1.getText());
+                                thisinh.setNgaySinh(jDateChooser1.getDate());
+                                thisinh.setSoChungMinhThu(jTextField2.getText());
+                                thisinh.setDiaChi(jTextArea1.getText());
+                                thisinh.setMaDe(jComboBox1.getSelectedItem().toString());
+                                thisinh.setNgayPhaiLamBai(jDateChooser2.getDate());
+                                if (DbController.updateStudentToDb(thisinh)) {
+                                    JOptionPane.showMessageDialog(null, "Update successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Update failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                                setVisible(false);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Please fill all text fields", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     private void showBlankInformation() {
+        setTitle("Add New Student");
         jTextField3.setText("");
         jTextField1.setText("");
         jDateChooser1.setDate(new Date(System.currentTimeMillis()));
         jTextField2.setText("");
         jTextArea1.setText("");
         jDateChooser2.setDate(new Date(System.currentTimeMillis()));
-        jButton2.setEnabled(false);
+        jButton2.setVisible(false);
         setEnableComponent(true);
+        jButton3.setText("Save");
+        jButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!(jTextField3.getText().isEmpty() || jTextField1.getText().isEmpty() || jTextField2.getText().isEmpty())) {
+                    if (jDateChooser1.getDate().after(new Date(System.currentTimeMillis()))) {
+                        JOptionPane.showMessageDialog(null, "Date of Birth can't be the day after today.", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else if (DateUtils.isSameDay(jDateChooser1.getDate(), new Date(System.currentTimeMillis()))) {
+                        JOptionPane.showMessageDialog(null, "Date of Birth can't be today.", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else if (!(DbController.getListStudentForCheck().containsKey(jTextField3.getText().toUpperCase()))) {
+                        thisinh = new ThiSinh();
+                        thisinh.setMaThiSinh(jTextField3.getText().toUpperCase());
+                        thisinh.setHoTen(jTextField1.getText());
+                        thisinh.setNgaySinh(jDateChooser1.getDate());
+                        thisinh.setSoChungMinhThu(jTextField2.getText());
+                        thisinh.setDiaChi(jTextArea1.getText());
+                        thisinh.setMaDe(jComboBox1.getSelectedItem().toString());
+                        thisinh.setNgayPhaiLamBai(jDateChooser2.getDate());
+                        if (DbController.addStudentToDb(thisinh)) {
+                            JOptionPane.showMessageDialog(null, "Insert successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Insert failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Student Id existed. Please chooose another Id", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please fill all text fields", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
-    
-    private void setEnableComponent(boolean flag){
-        jTextField3.setEditable(flag);
+
+    private void setEnableComponent(boolean flag) {
+        if (this == null) {
+            jTextField3.setEditable(flag);
+        }
         jTextField1.setEditable(flag);
         jTextField2.setEditable(flag);
         jTextArea1.setEditable(flag);
         jComboBox1.setEnabled(flag);
+    }
+
+    public ThiSinh getStudent() {
+        return thisinh;
+    }
+
+    public boolean isDeletedStudent() {
+        return isDeleted;
     }
 
     /**
@@ -145,26 +242,25 @@ public class EditStudentDialog extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField1)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 117, Short.MAX_VALUE))
+                            .addComponent(jTextField3)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel7)
                                     .addComponent(jLabel2))
                                 .addGap(18, 18, 18)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))))
-                        .addGap(0, 92, Short.MAX_VALUE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 103, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField2)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -216,11 +312,6 @@ public class EditStudentDialog extends javax.swing.JDialog {
         });
 
         jButton3.setText("Edit");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -270,19 +361,17 @@ public class EditStudentDialog extends javax.swing.JDialog {
         if (dr == JOptionPane.YES_OPTION) {
             if (DbController.deleteStudentFormDb(thisinh.getMaThiSinh())) {
                 JOptionPane.showMessageDialog(this, "Student delete successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                isDeleted = true;
             } else {
                 JOptionPane.showMessageDialog(this, "Delete failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        setEnableComponent(true);
-    }//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

@@ -20,9 +20,9 @@ public class DeThiTableModel extends AbstractTableModel {
     public DeThiTableModel() {
         listDeThi = new LinkedList<>();
     }
-    
-    public void setData(List<DeThi> item){
-        this.listDeThi=item;
+
+    public void setData(List<DeThi> item) {
+        this.listDeThi = item;
     }
 
     @Override
@@ -94,5 +94,5 @@ public class DeThiTableModel extends AbstractTableModel {
             default:
                 return "";
         }
-    }    
+    }
 }

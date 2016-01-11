@@ -36,12 +36,7 @@ public class BeginTestDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         listCauHoi = item;
-
-        createAndShowUI();
-        showClock();
-        timer.start();
         userChecked = new int[10];
-        showQuestion(pos);
     }
 
     private void createAndShowUI() {
@@ -65,28 +60,21 @@ public class BeginTestDialog extends javax.swing.JDialog {
         jButton1.addActionListener(nextClick);
     }
 
-    private void showClock() {
-        if (pos == 0) {
-            jButton3.setEnabled(false);
-        }
-
-        timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (minuteCountdown > 0) {
-                    if (secondCountdown < 0) {
-                        secondCountdown = 59;
-                        minuteCountdown--;
-                    }
-                } else if (secondCountdown < 0) {
-                    timer.stop();
-                    showResult();
+    private ActionListener timerCount = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (minuteCountdown > 0) {
+                if (secondCountdown < 0) {
+                    secondCountdown = 59;
+                    minuteCountdown--;
                 }
-                jLabel3.setText(minuteCountdown + ":" + (secondCountdown < 10 ? "0" + secondCountdown : secondCountdown));
-                secondCountdown--;
+            } else if (secondCountdown < 0) {
+                showResult();
             }
-        });
-    }
+            jLabel3.setText(minuteCountdown + ":" + (secondCountdown < 10 ? "0" + secondCountdown : secondCountdown));
+            secondCountdown--;
+        }
+    };
 
     private void showQuestion(int position) {
         CauHoi temp = listCauHoi.get(position);
@@ -100,6 +88,7 @@ public class BeginTestDialog extends javax.swing.JDialog {
     }
 
     private void showResult() {
+        timer.stop();
         for (int i = 0; i < 10; i++) {
             if (userChecked[i] == (listCauHoi.get(i).getDapAn())) {
                 result += 1;
@@ -161,6 +150,11 @@ public class BeginTestDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jButton3.setText("Previous");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -328,7 +322,7 @@ public class BeginTestDialog extends javax.swing.JDialog {
                     }
                 }
 
-                showClock();
+                //showClock();
                 showQuestion(pos);
                 if (pos == 9) {
                     jButton1.setText("End Exam");
@@ -373,7 +367,6 @@ public class BeginTestDialog extends javax.swing.JDialog {
                 }
             }
 
-            showClock();
             showQuestion(pos);
             if (pos == 0) {
                 jButton3.setEnabled(false);
@@ -383,6 +376,13 @@ public class BeginTestDialog extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        createAndShowUI();
+        timer = new Timer(1000, timerCount);
+        showQuestion(pos);
+        timer.start();
+    }//GEN-LAST:event_formWindowOpened
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;

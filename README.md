@@ -1,6 +1,10 @@
 FAI-GC1006-S2-G1
 Project Group 1 - GC1006
 
+- 11Jan2016:
+	+ Add general exam function
+	+ Edit student dialog
+	+ Report of exam (by date, by subject)
 - 07Jan2016:
 	+ Insert result to Db
 	+ View test result	

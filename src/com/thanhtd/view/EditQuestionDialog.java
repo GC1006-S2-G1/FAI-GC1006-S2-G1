@@ -9,8 +9,8 @@ import com.thanhtd.controller.DbController;
 import com.thanhtd.model.CauHoi;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,7 +21,10 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     /**
      * Creates new form EditQuestionDialog
      */
-    CauHoi cauHoi = null;
+    private CauHoi cauHoi = null;
+    private boolean isDeleted = false;
+    private boolean isUpdated=false;
+    private List<String> listSubject = null;
 
     public EditQuestionDialog(java.awt.Frame parent, boolean modal, CauHoi item) {
         super(parent, modal);
@@ -32,6 +35,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
     }
 
     private void ShowInformation() {
+        getListSubject();
         if (cauHoi != null) {
             jLabel2.setText("" + cauHoi.getMaCauHoi());
             jTextArea1.setText(cauHoi.getNoiDung());
@@ -40,6 +44,11 @@ public class EditQuestionDialog extends javax.swing.JDialog {
             jTextArea3.setText(cauHoi.getTraLoi3());
             jTextArea5.setText(cauHoi.getTraLoi4());
             jTextField1.setText("" + cauHoi.getDapAn());
+            for (int i = 0; i < listSubject.size(); i++) {
+                if (listSubject.get(i).equals(cauHoi.getMonThi())) {
+                    jComboBox1.setSelectedIndex(i);
+                }
+            }
         } else {
             jLabel2.setText("" + (DbController.getLastQuestionId() + 1));
             jTextArea1.setText("");
@@ -65,8 +74,6 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jTextArea4.setLineWrap(true);
         jTextArea5.setWrapStyleWord(true);
         jTextArea5.setLineWrap(true);
-        
-        getListSubject();
 
         if (cauHoi == null) {
             jButton2.setText("Save");
@@ -89,9 +96,17 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         return cauHoi;
     }
 
+    public boolean isDeletedQuestion() {
+        return isDeleted;
+    }
+    
+    public boolean isUpdatedQuestion(){
+        return isUpdated;
+    }
+
     private void getListSubject() {
-        List<String> temp = DbController.getListSubject();
-        for (String i : temp) {
+        listSubject = DbController.getListSubject();
+        for (String i : listSubject) {
             jComboBox1.addItem(i);
         }
     }
@@ -128,6 +143,7 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -181,8 +197,20 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         });
 
         jButton2.setText("Delete");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel9.setText("Subject");
+
+        jButton3.setText("Save");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -225,6 +253,8 @@ public class EditQuestionDialog extends javax.swing.JDialog {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -260,7 +290,8 @@ public class EditQuestionDialog extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -273,9 +304,50 @@ public class EditQuestionDialog extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        int dr = JOptionPane.showConfirmDialog(this, "Are you sure want to delete this question?", "Question", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (dr == JOptionPane.YES_OPTION) {
+            if (DbController.deleteQuestionFromDb(cauHoi)) {
+                JOptionPane.showMessageDialog(this, "Question delete successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                isDeleted = true;
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Question delete failed.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (jComboBox1.getSelectedItem().toString().compareTo(cauHoi.getMonThi()) != 0 || jTextArea1.getText().compareTo(cauHoi.getNoiDung()) != 0
+                || jTextArea2.getText().compareTo(cauHoi.getTraLoi1()) != 0 || jTextArea4.getText().compareTo(cauHoi.getTraLoi2()) != 0
+                || jTextArea3.getText().compareTo(cauHoi.getTraLoi3()) != 0 || jTextArea5.getText().compareTo(cauHoi.getTraLoi4()) != 0
+                || Integer.parseInt(jTextField1.getText()) != cauHoi.getDapAn()) {
+            int dr = JOptionPane.showConfirmDialog(this, "Are you want to save?", "Save change", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (dr == JOptionPane.YES_OPTION) {
+                CauHoi temp = new CauHoi();
+                temp.setMaCauHoi(Integer.parseInt(jLabel2.getText()));
+                temp.setMonThi(jComboBox1.getSelectedItem().toString());
+                temp.setNoiDung(jTextArea1.getText());
+                temp.setTraLoi1(jTextArea2.getText());
+                temp.setTraLoi2(jTextArea4.getText());
+                temp.setTraLoi3(jTextArea3.getText());
+                temp.setTraLoi4(jTextArea5.getText());
+                temp.setDapAn(Integer.parseInt(jTextField1.getText()));
+                if (DbController.updateQuestionToDb(temp)) {
+                    JOptionPane.showMessageDialog(this, "Update successfully.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    isUpdated=true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Update failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

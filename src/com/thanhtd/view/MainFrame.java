@@ -8,6 +8,8 @@ package com.thanhtd.view;
 import com.thanhtd.controller.DbController;
 import com.thanhtd.model.GiaoVu;
 import com.thanhtd.model.ThiSinh;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /**
  *
@@ -31,6 +33,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2.setVisible(false);
         jMenuItem5.setEnabled(false);
         jMenuItem9.setEnabled(false);
+        jMenuItem3.setVisible(false);
         information();
     }
 
@@ -47,12 +50,14 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem8.setEnabled(false);
         jMenuItem5.setEnabled(true);
         jMenuItem9.setEnabled(true);
+        jMenuItem3.setVisible(true);
     }
 
     private void uiAsStudent(boolean isTestDay) {
         jMenu5.setVisible(false);
         jMenuItem5.setEnabled(true);
         jMenuItem7.setEnabled(false);
+        //jMenuItem3.setVisible(false);
 
         if (isTestDay) {
             jMenuItem4.setEnabled(true);
@@ -85,6 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FPT University Test Online System");
@@ -168,6 +174,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu3.add(jMenuItem5);
+
+        jMenuItem3.setText("Report");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem3);
 
         jMenuBar1.add(jMenu3);
 
@@ -257,6 +271,12 @@ public class MainFrame extends javax.swing.JFrame {
         changePass.setVisible(true);
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        ReportDialog reportDialog = new ReportDialog(this, true);
+        reportDialog.getContentPane();
+        reportDialog.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -301,6 +321,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem7;
